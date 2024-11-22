@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+</head>
+<body>
+    <a href="/api">메인 페이지 입니다.</a>
+    <a href="/api/join">회원 가입 페이지 입니다.</a>
+    <a href="/api/profile">프로필 페이지 입니다.</a>
+    <a href="/api/reserve_1">예비1 페이지 입니다.</a>
+    <a href="/api/reserve_2">예비2 페이지 입니다.</a>
+    <a href="/api/reserve_3">예비3 페이지 입니다.</a>
+    <h3>회원가입 페이지 입니다.</h3>
+    <div class="timeline">
+        <form id="join-form" action="/api/auth/join" method="post">
+          <div class="input-group">
+            <label for="join-email">이메일</label>
+            <input id="join-email" type="email" name="email"></div>
+          <div class="input-group">
+            <label for="join-nick">닉네임</label>
+            <input id="join-nick" type="text" name="nick"></div>
+          <div class="input-group">
+            <label for="join-password">비밀번호</label>
+            <input id="join-password" type="password" name="password">
+          </div>
+          <button id="join-btn" type="submit" class="btn">회원가입</button>
+        </form>
+      </div>
+      <script>
+        window.onload = () => {
+          if (new URL(location.href).searchParams.get('error')) {
+            alert('이미 존재하는 이메일입니다.');
+          }
+        };
+      </script>
+
+</body>
+</html>

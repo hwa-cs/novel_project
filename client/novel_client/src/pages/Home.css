@@ -1,0 +1,24 @@
+.home {
+    display: flex;
+    flex-direction: column; /* 요소들을 세로로 배치 */
+    justify-content: center; /*가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    height: 100%; /* 부모 요소의 높이를 기준으로 정렬 (필요 시 설정) */
+    border-bottom: 2px solid black;
+    padding: 10px; /* 텍스트와 선 사이 간격 */
+}
+
+.home div {
+    margin: 10px 0; /* 항목 간 간격 추가 */
+  }
+
+.join {
+    display: flex;
+    flex-direction: column; /* 요소들을 세로로 배치 */
+    justify-content: center; /*가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    height: 100%; /* 부모 요소의 높이를 기준으로 정렬 (필요 시 설정) */
+    border: 2px solid black;
+    padding: 10px; /* 텍스트와 선 사이 간격 */
+    gap: 10px;
+}

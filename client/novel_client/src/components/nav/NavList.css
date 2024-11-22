@@ -1,0 +1,6 @@
+.navList {
+    display: flex;
+}
+.navList article {
+    margin: 5px; /* 항목 간 간격 추가 */
+  }
