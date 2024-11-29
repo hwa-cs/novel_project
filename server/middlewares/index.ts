@@ -4,7 +4,7 @@ const isLoggedIn: RequestHandler = (req, res, next) => {
   if (req.isAuthenticated()) {
     next();
   } else {
-    res.status(403).send('로그인 필요');
+    res.status(403).json('로그인 필요');
   }
 };
 
@@ -16,5 +16,4 @@ const isNotLoggedIn: RequestHandler = (req, res, next) => {
     res.redirect(`/api/?error=${message}`);
   }
 };
-
-export { isLoggedIn, isNotLoggedIn}
+export { isLoggedIn, isNotLoggedIn }

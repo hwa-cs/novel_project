@@ -3,11 +3,11 @@ import User from '../models/user';
 import Post from '../models/post';
 
 const renderProfile: RequestHandler = (req, res) => {
-    res.render('profile', { title: '내 정보 - NodeBird' });
+    res.render('profile', { title: '내 정보 - Novel' });
   };
   
   const renderJoin: RequestHandler = (req, res) => {
-    res.render('join', { title: '회원가입 - NodeBird' });
+    res.render('join', { title: '회원가입 - Novel' });
   };
 
 const renderMain: RequestHandler = async (req, res, next) => {
@@ -23,6 +23,7 @@ const renderMain: RequestHandler = async (req, res, next) => {
         title: 'Novel',
         twits: posts,
       });
+      
     } catch (err) {
       console.error(err);
       next(err);

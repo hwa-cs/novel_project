@@ -16,11 +16,11 @@ exports.renderJoin = exports.renderMain = exports.renderProfile = exports.render
 const user_1 = __importDefault(require("../models/user"));
 const post_1 = __importDefault(require("../models/post"));
 const renderProfile = (req, res) => {
-    res.render('profile', { title: '내 정보 - NodeBird' });
+    res.render('profile', { title: '내 정보 - Novel' });
 };
 exports.renderProfile = renderProfile;
 const renderJoin = (req, res) => {
-    res.render('join', { title: '회원가입 - NodeBird' });
+    res.render('join', { title: '회원가입 - Novel' });
 };
 exports.renderJoin = renderJoin;
 const renderMain = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

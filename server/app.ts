@@ -14,15 +14,17 @@ import passport from 'passport';
 import authRouter from './routes/auth';
 import passportConfig from './passport';
 
-dotenv.config(); // process.env
+dotenv.config(); // process.
+
 import pageRouter from './routes/page';
+import postRouter from './routes/post';
 
 const app = express();
 
 passportConfig()
 
 // 모든 도메인에서의 요청 허용
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 // 특정 도메인만 허용
 // app.use(cors({ origin: 'http://localhost:5173' }));
 
@@ -40,7 +42,7 @@ app.use(
     })
 );
 
-// 2. passport 초기화와 세션 설정
+// 2. passport 초기화와 세션 설정 
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());  // JSON 형식의 요청 본문을 파싱
@@ -51,6 +53,7 @@ app.use('/api/auth', authRouter)
 app.set('port', process.env.PORT || 8001);
 app.set('view engine', 'html');
 app.use('/api/img', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/post', postRouter);
 
 app.use(morgan('dev')) // 개발 모드로 설정 
 app.use(express.static(path.join(__dirname, 'public'))); // 보안상 다른 폴더는 접근 불가능하지만 public폴더는 허용

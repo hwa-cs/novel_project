@@ -4,13 +4,15 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import Home from './pages/Home';
-import Profile from './pages/Profile';
+import Short from './pages/Short';
 import Join from './pages/user/Join';
 import Reserve from './pages/Reserve';
 import ErrorPage from './pages/ErrorPage';
-import Reserve_1 from './pages/Reserve_1';
-import Reserve_2 from './pages/Reserve_2';
+import Title from './pages/Title';
 import Login from './pages/user/Login';
+import Cover from './pages/Cover';
+import Introduction from './pages/Introduction';
+import Analyze from './pages/Analyze';
 import './index.css';
 
 const queryClient = new QueryClient();
@@ -25,28 +27,36 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: 'profile',
-        element: <Profile />,
+        path: 'short',
+        element: <Short />,
       },
       {
         path: 'join',
         element: <Join />,
       },
       {
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'analyze',
+        element: <Analyze />,
+      },
+      {
+        path: 'cover',
+        element: <Cover />,
+      },
+      {
+        path: 'introduction',
+        element: <Introduction />,
+      },
+      {
         path: 'reserve',
         element: <Reserve />,
       },
       {
-        path: 'reserve/1',
-        element: <Reserve_1 />,
-      },
-      {
-        path: 'reserve/2',
-        element: <Reserve_2 />,
-      },
-      {
-        path: 'login',
-        element: <Login />,
+        path: 'title',
+        element: <Title />,
       },
     ],
     errorElement: <ErrorPage />,

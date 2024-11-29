@@ -5,6 +5,7 @@ import Hashtag from './hashtag'
 class Post extends Sequelize.Model {
     declare id: CreationOptional<number>
     declare content: string
+    declare testcontent: string
     declare img: string
     declare createdAt: CreationOptional<Date>
     declare updatedAt: CreationOptional<Date>
@@ -13,7 +14,11 @@ class Post extends Sequelize.Model {
     static initiate(sequelize: Sequelize.Sequelize) {
       Post.init({
         content: {
-          type: Sequelize.STRING(140),
+          type: Sequelize.STRING(700),
+          allowNull: false,
+        },
+        testcontent: {
+          type: Sequelize.STRING(700),
           allowNull: false,
         },
         img: {

@@ -1,6 +1,0 @@
-.nav {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 2px solid black; /* 두께와 색상 설정 */
-    gap: 10px;
-}

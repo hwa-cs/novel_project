@@ -1,8 +1,8 @@
 import express from'express'
-import { isLoggedIn } from'../middlewares'
-import { follow } from'../controllers/user'
+// import { isLoggedIn } from'../middlewares'
+// import { loginCheck } from'../controllers/user'
 const router = express.Router()
 
-router.post('/:id/follow', isLoggedIn, follow)
+// router.get('/',isLoggedIn ,loginCheck)
 
 export default router

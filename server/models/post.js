@@ -10,7 +10,11 @@ class Post extends sequelize_1.default.Model {
     static initiate(sequelize) {
         Post.init({
             content: {
-                type: sequelize_1.default.STRING(140),
+                type: sequelize_1.default.STRING(700),
+                allowNull: false,
+            },
+            testcontent: {
+                type: sequelize_1.default.STRING(700),
                 allowNull: false,
             },
             img: {

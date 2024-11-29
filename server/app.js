@@ -16,12 +16,13 @@ const cors_1 = __importDefault(require("cors"));
 const passport_1 = __importDefault(require("passport"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const passport_2 = __importDefault(require("./passport"));
-dotenv_1.default.config(); // process.env
+dotenv_1.default.config(); // process.
 const page_1 = __importDefault(require("./routes/page"));
+const post_1 = __importDefault(require("./routes/post"));
 const app = (0, express_1.default)();
 (0, passport_2.default)();
 // 모든 도메인에서의 요청 허용
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({ origin: true, credentials: true }));
 // 특정 도메인만 허용
 // app.use(cors({ origin: 'http://localhost:5173' }));
 // 1. express-session 미들웨어 먼저 설정
@@ -34,7 +35,7 @@ app.use((0, express_session_1.default)({
         secure: false, // 개발 환경에서는 false로 설정
     },
 }));
-// 2. passport 초기화와 세션 설정
+// 2. passport 초기화와 세션 설정 
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 app.use(express_1.default.json()); // JSON 형식의 요청 본문을 파싱
@@ -44,6 +45,7 @@ app.use('/api/auth', auth_1.default);
 app.set('port', process.env.PORT || 8001);
 app.set('view engine', 'html');
 app.use('/api/img', express_1.default.static(path_1.default.join(__dirname, 'uploads')));
+app.use('/api/post', post_1.default);
 app.use((0, morgan_1.default)('dev')); // 개발 모드로 설정 
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public'))); // 보안상 다른 폴더는 접근 불가능하지만 public폴더는 허용
 app.use((0, cookie_parser_1.default)(process.env.COOKIE_SECRET));

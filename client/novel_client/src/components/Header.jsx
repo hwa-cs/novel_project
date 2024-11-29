@@ -1,23 +1,108 @@
 import Title from './nav/Title';
-import NavList from './nav/NavList';
-import { useContext } from 'react';
-import './Header.css'
+import { useContext, useEffect, useState } from 'react';
 import { LoginCheckContext } from '../context/LoginCheck';
+import { getNovelApi } from '../api/novelApi';  // API 요청을 보내는 함수
+import { Link } from'react-router-dom';
+import {
+  FaBars,
+  FaTimes,
+} from 'react-icons/fa';
+
 const Header= () => {
-  const {LoginCheck} = useContext(LoginCheckContext)
+  const navItems = [
+    { id: 'home', label: '홈페이지', to: '/' },
+    { id: 'short', label: '단락생성', to: '/short' },
+    { id: 'cover', label: '표지생성',  to: '/cover' },
+    { id: 'reserve', label: '제목생성 및 트렌드 분석', to: '/reserve' },
+    { id: 'introduction', label: '팀소개', to: '/introduction' },
+  ];
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const { LoginCheck, toggleLogin } = useContext(LoginCheckContext)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+
+  // -------------------------로그아웃----------------------------
+  const handleLogout = async () => {
+    if (confirm('로그아웃 하시겠습니까?') === false) {
+      return
+    }
+    try {
+        // 로그인 요청을 POST 방식으로 보내기
+        const response = await getNovelApi({
+            method: 'GET',
+            url: '/api/auth/logout', // POST 요청 URL
+            withCredentials: true,
+            data: { email, password }, // 서버로 보내는 데이터
+        })
+        console.log('로그아웃');
+        // Session.set("userSession", null);
+        sessionStorage.clear()
+        toggleLogin(); // 로그아웃 성공시 로그인 상태를 false로 변경
+
+    } catch (error) {
+        console.error(error.response?.data || error.message); // 에러 처리
+        setResponse(error.response?.data.error); // state 
+    }
+}
+
+useEffect(() => {        
+}, ['setLogin'])
+// setLogin 일떄 렌더링
+
+  // ----------------------------------------------------------------
+
+const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
   return (
-    <header className='nav'>
-      <div>
+    <header className="relative z-50 sticky top-0 bg-[#292929] text-gray-300">
+      <div className="container px-4 mx-auto flex justify-between items-center h-14">
         <Title />
+        <nav className="hidden md:flex space-x-6">
+          {navItems.map(Item => (
+            <Link key={Item.id} to={Item.to} className="hover:text-[#c0daaf]">
+              {Item.label}
+            </Link>
+          ))}
+        </nav>
+        <button className= 'md:hidden' onClick={toggleMenu}>
+          <FaBars />
+        </button>
+        <div className='hidden md:flex'>
+          {LoginCheck? 
+          <button onClick={handleLogout}>로그아웃</button>:
+          <Link to="/login">로그인</Link>}
+        </div>
       </div>
-      <div>
-        <NavList />
-      </div>
-      <div>
-        {LoginCheck? 
-        <div>로그인</div>:
-        <div>로그아웃</div>}
-      </div>
+
+            {/* Mobile Menu */}
+      <aside 
+        className={`
+        fixed top-0 left-0 w-64 h-full bg-gray-800 z-50
+        ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+        md:hidden transform transition-transform duration-300 ease-in-out`}
+      >    
+        <div className="flex justify-end p-4">
+          <button
+            className="text-white focus:outline-none"
+            aria-label="Close menu"
+            onClick={toggleMenu}
+          >
+            <FaTimes className="h-6 w-6" />
+          </button>
+        </div>
+        <div className='flex flex-col space-y-4 p-4'>       
+          {navItems.map(Item => (
+            <Link key={Item.id} to={Item.to} className="hover:text-gray-600">
+              {Item.label}
+            </Link>
+          ))}
+          {LoginCheck? 
+          <button onClick={handleLogout}>로그아웃</button>:
+          <Link to="/login">로그인</Link>}
+        </div>
+      </aside>
     </header>
   )
 }
