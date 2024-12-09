@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import passport from 'passport';
 import User from '../models/user';
 import Post from '../models/post';
+import Cover from '../models/cover';
 import { RequestHandler } from 'express';
 
 const join: RequestHandler = async (req, res, next) => {
@@ -74,20 +75,28 @@ const login: RequestHandler = async (req, res, next) => {
 
       try {
         // 사용자 정보 추출
-        const data = { 'id': user.id, 'email': user.email, 'nick': user.nick };
+        const data = { 'id': user.id, 'email': user.email, 'nick': user.nick, 'provider': user.provider};
 
         // 포스트 데이터 비동기적으로 가져오기
         const posts = await Post.findAll({
-          attributes: ['content', 'testcontent'],
+          attributes: ['content', 'makeContent'],
           where: { userId: user.id },
           order: [['createdAt', 'DESC']],
           limit: 10,
         });
+        
+        const Covers = await Cover.findAll({
+          attributes: ['makeCover'],
+          where: { userId: user.id },
+          order: [['createdAt', "DESC"]],
+          limit: 6,
+          raw: true
+      });
 
         // 포스트 데이터 처리
         const postData = posts.map(post => ({
           content: post.content,
-          testcontent: post.testcontent,
+          makeContent: post.makeContent,
         }));
 
         // 성공적인 로그인 응답
@@ -95,6 +104,7 @@ const login: RequestHandler = async (req, res, next) => {
           message: '로그인 성공',
           data,
           posts: postData,
+          covers: Covers,
         });
 
       } catch (error) {

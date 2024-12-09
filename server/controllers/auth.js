@@ -17,6 +17,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const passport_1 = __importDefault(require("passport"));
 const user_1 = __importDefault(require("../models/user"));
 const post_1 = __importDefault(require("../models/post"));
+const cover_1 = __importDefault(require("../models/cover"));
 const join = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, nick, password } = req.body;
     // 입력 데이터 유효성 검사
@@ -81,24 +82,32 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
             }
             try {
                 // 사용자 정보 추출
-                const data = { 'id': user.id, 'email': user.email, 'nick': user.nick };
+                const data = { 'id': user.id, 'email': user.email, 'nick': user.nick, 'provider': user.provider };
                 // 포스트 데이터 비동기적으로 가져오기
                 const posts = yield post_1.default.findAll({
-                    attributes: ['content', 'testcontent'],
+                    attributes: ['content', 'makeContent'],
                     where: { userId: user.id },
                     order: [['createdAt', 'DESC']],
                     limit: 10,
                 });
+                const Covers = yield cover_1.default.findAll({
+                    attributes: ['makeCover'],
+                    where: { userId: user.id },
+                    order: [['createdAt', "DESC"]],
+                    limit: 6,
+                    raw: true
+                });
                 // 포스트 데이터 처리
                 const postData = posts.map(post => ({
                     content: post.content,
-                    testcontent: post.testcontent,
+                    makeContent: post.makeContent,
                 }));
                 // 성공적인 로그인 응답
                 return res.status(200).json({
                     message: '로그인 성공',
                     data,
                     posts: postData,
+                    covers: Covers,
                 });
             }
             catch (error) {

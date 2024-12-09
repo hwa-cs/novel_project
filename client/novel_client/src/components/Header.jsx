@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { LoginCheckContext } from '../context/LoginCheck';
 import { getNovelApi } from '../api/novelApi';  // API 요청을 보내는 함수
 import { Link } from'react-router-dom';
+import { handleLogout } from '../pages/user/Logout';
 import {
   FaBars,
   FaTimes,
@@ -24,28 +25,19 @@ const Header= () => {
 
 
   // -------------------------로그아웃----------------------------
-  const handleLogout = async () => {
+const onLogout = async () => {
+
     if (confirm('로그아웃 하시겠습니까?') === false) {
       return
     }
-    try {
-        // 로그인 요청을 POST 방식으로 보내기
-        const response = await getNovelApi({
-            method: 'GET',
-            url: '/api/auth/logout', // POST 요청 URL
-            withCredentials: true,
-            data: { email, password }, // 서버로 보내는 데이터
-        })
-        console.log('로그아웃');
-        // Session.set("userSession", null);
-        sessionStorage.clear()
-        toggleLogin(); // 로그아웃 성공시 로그인 상태를 false로 변경
-
-    } catch (error) {
-        console.error(error.response?.data || error.message); // 에러 처리
-        setResponse(error.response?.data.error); // state 
-    }
-}
+      try {
+          const sessionData = JSON.parse(sessionStorage.getItem('userObj'));
+          await handleLogout(sessionData, toggleLogin);
+          console.log('로그아웃 성공');
+      } catch (error) {
+          setError(error.message);
+      }
+  };
 
 useEffect(() => {        
 }, ['setLogin'])
@@ -71,7 +63,7 @@ const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
         </button>
         <div className='hidden md:flex'>
           {LoginCheck? 
-          <button onClick={handleLogout}>로그아웃</button>:
+          <button onClick={onLogout}>로그아웃</button>:
           <Link to="/login">로그인</Link>}
         </div>
       </div>

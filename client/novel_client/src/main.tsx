@@ -13,6 +13,12 @@ import Login from './pages/user/Login';
 import Cover from './pages/Cover';
 import Introduction from './pages/Introduction';
 import Analyze from './pages/Analyze';
+import Callback from './pages/kakao/Callback';
+import Fantasy from './pages/Genre/Fantasy';
+import Romance from './pages/Genre/Romance';
+import RomanceFantasy from './pages/Genre/RomanceFantasy';
+import CurrentFantasy from './pages/Genre/CurrentFantasy';
+import Martial from './pages/Genre/Martial';
 import './index.css';
 
 const queryClient = new QueryClient();
@@ -41,6 +47,28 @@ const router = createBrowserRouter([
       {
         path: 'analyze',
         element: <Analyze />,
+        children: [
+          {
+          path: 'fantasy',
+          element: <Fantasy />,
+          },
+          {
+          path: 'romance',
+          element: <Romance />,
+          },
+          {
+          path: 'romanceFantasy',
+          element: <RomanceFantasy />,
+          },
+          {
+          path: 'currentFantasy',
+          element: <CurrentFantasy />,
+          },
+          {
+          path: 'martial',
+          element: <Martial />,
+          }
+        ]
       },
       {
         path: 'cover',
@@ -57,6 +85,10 @@ const router = createBrowserRouter([
       {
         path: 'title',
         element: <Title />,
+      },
+      {
+        path: 'Callback',
+        element: <Callback />,
       },
     ],
     errorElement: <ErrorPage />,

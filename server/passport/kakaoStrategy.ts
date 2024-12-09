@@ -16,6 +16,7 @@ export default () => {
             if (exUser) {
                 // 기존 사용자, accessToken 업데이트 필요시 처리
                 await exUser.update({ accessToken: accessToken || '' });
+                console.log('기존 사용자 :')
                 done(null, exUser);
             } else {
                 // 새로운 사용자 생성
@@ -26,6 +27,7 @@ export default () => {
                     provider: 'kakao',
                     accessToken: accessToken || ''
                 });
+                console.log('새로운 사용자 :')
                 done(null, newUser);
             }
         } catch (error) {

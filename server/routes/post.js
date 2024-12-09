@@ -1,33 +1,38 @@
 "use strict";
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const { afterUploadImage, uploadPost } = require('../controllers/post');
-const { isLoggedIn } = require('../middlewares');
-const router = express.Router();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const multer_1 = __importDefault(require("multer"));
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
+const post_1 = require("../controllers/post");
+const middlewares_1 = require("../middlewares");
+const router = express_1.default.Router();
 try {
-    fs.readdirSync('uploads');
+    fs_1.default.readdirSync('uploads');
 }
 catch (error) {
     console.error('uploads 폴더가 없어 uploads 폴더를 생성합니다.');
-    fs.mkdirSync('uploads');
+    fs_1.default.mkdirSync('uploads');
 }
-const upload = multer({
-    storage: multer.diskStorage({
+const upload = (0, multer_1.default)({
+    storage: multer_1.default.diskStorage({
         destination(req, file, cb) {
             cb(null, 'uploads/');
         },
         filename(req, file, cb) {
-            const ext = path.extname(file.originalname);
-            cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
+            const ext = path_1.default.extname(file.originalname);
+            cb(null, path_1.default.basename(file.originalname, ext) + Date.now() + ext);
         },
     }),
     limits: { fileSize: 5 * 1024 * 1024 },
 });
 // POST /post/img
-router.post('/img', isLoggedIn, upload.single('img'), afterUploadImage);
+// router.post('/img', isLoggedIn, upload.single('img'), afterUploadImage);
 // POST /post
-const upload2 = multer();
-router.post('/', isLoggedIn, upload2.none(), uploadPost);
+const upload2 = (0, multer_1.default)();
+router.post('/', middlewares_1.isLoggedIn, upload2.none(), post_1.uploadPost);
+router.post('/cover', middlewares_1.isLoggedIn, post_1.makeCover);
 module.exports = router;

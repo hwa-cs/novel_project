@@ -6,8 +6,16 @@ export default {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        "books-img": "url('/src/assets/books.jpg')",
+        "books_2-img": "url('/src/assets/books_2.jpg')",
+        "books_3-img": "url('/src/assets/books_3.jpg')",
+        "paper-img": "url('/src/assets/paper.jpg')",
+        "paper_2-img": "url('/src/assets/paper_2.jpg')",
+      },
       animation: {
-        'infinite-scroll': 'infinite-scroll 25s linear infinite',
+        'infinite-scroll': 'infinite-scroll 35s linear infinite',
+        // home 페이지의 자동 슬라이스 속도 조절
       },
       keyframes: {
         'infinite-scroll': {

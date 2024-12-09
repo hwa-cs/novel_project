@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import FlipPage from 'react-flip-page';
 import { getNovelApi } from '../api/novelApi'; // API 요청 함수
 import Typewriter from 'typewriter-effect';
+import { FaSpinner } from "react-icons/fa";
 
 const Short = () => {
   const { LoginCheck } = useContext(LoginCheckContext);  // 로그인 상태 확인
@@ -12,6 +13,7 @@ const Short = () => {
   const userPosts = JSON.parse(sessionStorage.getItem('userPosts'));
   const [content, setContent] = useState("");
   const [lastPost, setLastPost] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const handleGoToPage = () => {
     if (flipPageRef.current) {
@@ -24,6 +26,9 @@ const Short = () => {
 
   const handleText = async () => {
     try {
+      if (!loading) {
+          setLoading(true);
+      }
       const response = await getNovelApi({
         method: 'POST',
         url: '/api/post', // GET 요청 URL
@@ -32,7 +37,7 @@ const Short = () => {
       });
 
       const userPost = response.data.posts;
-      setLastPost(userPost[0].testcontent);
+      setLastPost(userPost[0].makeContent);
       sessionStorage.setItem('userPosts', JSON.stringify(userPost));
 
       // 작성 후 마지막 페이지로 이동
@@ -40,6 +45,7 @@ const Short = () => {
       if (flipPageRef.current) {
         flipPageRef.current.gotoPage(lastPageIndex);  // 마지막 페이지로 이동
       }
+      setLoading(false);
     } catch (error) {
       console.error(error.response?.data || error.message); // 에러 처리
     }
@@ -69,15 +75,15 @@ const Short = () => {
           disableSwipe="true"
           uncutPages="true"
           orientation="horizontal"
-          width="1000"
-          height="500"
+          width="1500"
+          height="600"
           animationDuration="500"
           className="shadow-lg rounded-lg overflow-hidden m-24"
         >
           {/* 페이지 1 */}
           <div className="flex bg-white">
             {/* 페이지 왼쪽 */}
-            <div className="bg-gray-100 flex-1 p-6 w-[250px] h-[500px] border-r-2 border-gray-300">
+            <div className="bg-gray-100 flex-1 p-6 w-[250px] h-[600px] border-r-2 border-gray-300">
               <h2 className="text-2xl font-semibold mb-4">사용 설명서</h2>
               <p className="text-gray-600">알아서 쓰세요</p>
             </div>
@@ -93,7 +99,7 @@ const Short = () => {
           {userPosts?.slice().reverse().map((a, i) => (
             <div className="flex bg-gray-50" key={i}>
               {/* 페이지 왼쪽 */}
-              <div className="border-r-2 border-gray-300 flex-1 p-6 w-[250px] h-[500px]">
+              <div className="border-r-2 border-gray-300 flex-1 p-6 w-[250px] h-[600px]">
                 <a className="text-blue-600 font-bold">{i}</a>
                 <h2 className="text-lg font-semibold text-gray-700">{a.content}</h2>
               </div>
@@ -101,7 +107,7 @@ const Short = () => {
               {/* 페이지 오른쪽 */}
               <div className="flex-1 p-6">
                 <a className="text-blue-600 font-bold">{i}-1</a>
-                <p className="text-gray-600">{a.testcontent}</p>
+                <p className="text-gray-600">{a.makeContent}</p>
               </div>
             </div>
           ))}
@@ -109,7 +115,7 @@ const Short = () => {
           {/* 작성 페이지 */}
           <div className="flex bg-white">
             {/* 페이지 왼쪽 */}
-            <div className="border-r-2 border-gray-300 flex-1 p-6 w-[250px] h-[500px]">
+            <div className="border-r-2 border-gray-300 flex-1 p-6 w-[250px] h-[600px]">
               <h2 className="text-2xl font-semibold mb-4">작성 페이지</h2>
               <p className="text-gray-600">작성칸</p>
               {content}
@@ -119,12 +125,11 @@ const Short = () => {
             <div className="flex-1 p-6">
               <h2 className="text-2xl font-semibold mb-4">출력 페이지</h2>
               <p className="text-gray-600">출력 내용</p>
-              {console.log('여기에요!!',lastPost)}
-
                 <Typewriter
                     options={{
                       strings: [`${lastPost}`],
                       autoStart: true,
+                      delay: 10,
                       loop: true,  // 반복되도록 설정
                       cursor: "",   // 커서도 표시되지 않도록 설정
                       deleteSpeed: 99999
@@ -136,7 +141,7 @@ const Short = () => {
           {/* 마지막 페이지 */}
           <div className="flex bg-white">
             {/* 페이지 왼쪽 */}
-            <div className="bg-[#c0daaf] flex-1 p-6 w-[250px] h-[500px] border-r-2 border-gray-300">
+            <div className="bg-[#c0daaf] flex-1 p-6 w-[250px] h-[600px] border-r-2 border-gray-300">
               <h2 className="text-2xl font-semibold mb-4">마지막 페이지</h2>
               <p className="text-gray-600">잘썼어요?</p>
             </div>
@@ -163,9 +168,12 @@ const Short = () => {
             />
             <button
               onClick={handleText}
+              disabled={loading}
               className="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
-            >
-              작성
+            >                                           
+              <span className="flex items-center justify-center">
+                {loading? <FaSpinner /> : '작성'}
+              </span>
             </button>
             <button
               onClick={ressetText}

@@ -5,8 +5,7 @@ import Hashtag from './hashtag'
 class Post extends Sequelize.Model {
     declare id: CreationOptional<number>
     declare content: string
-    declare testcontent: string
-    declare img: string
+    declare makeContent: string
     declare createdAt: CreationOptional<Date>
     declare updatedAt: CreationOptional<Date>
     declare addHashtags: BelongsToManyAddAssociationMixin<Hashtag, number>
@@ -15,14 +14,10 @@ class Post extends Sequelize.Model {
       Post.init({
         content: {
           type: Sequelize.STRING(700),
-          allowNull: false,
+          allowNull: true,
         },
-        testcontent: {
-          type: Sequelize.STRING(700),
-          allowNull: false,
-        },
-        img: {
-          type: Sequelize.STRING(200),
+        makeContent: {
+          type: Sequelize.TEXT,
           allowNull: true,
         },
       }, {

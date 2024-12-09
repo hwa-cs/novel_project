@@ -66,7 +66,7 @@ const Join = () => {
     <div className='bg-gradient-to-b from-[#dcddd3] via-[#e2e3dc] to-[#dcddd3] shadow-inner-corner h-screen flex justify-center items-center relative'>
 
       <div 
-          className='bg-black rotate-[170deg] h-[600px] w-[430px] absolute top-20 flex flex-col items-center border p-6 rounded-lg shadow-lg' 
+          className='bg-books_2-img bg-cover rotate-[170deg] h-[600px] w-[430px] absolute top-20 flex flex-col items-center border p-6 rounded-lg shadow-lg' 
        />
     
       <div 

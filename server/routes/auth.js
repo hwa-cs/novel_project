@@ -21,15 +21,32 @@ const router = express_1.default.Router();
 router.post('/join', middlewares_1.isNotLoggedIn, auth_1.join); // 회원가입
 router.post('/login', middlewares_1.isNotLoggedIn, auth_1.login); // 로그인
 router.get('/logout', middlewares_1.isLoggedIn, auth_1.logout); // 로그아웃
-router.get('/kakao', passport_1.default.authenticate('kakao'));
+router.get('/kakao', passport_1.default.authenticate('kakao')); // 카카오 로그인  패스폴트
+router.get('/naver', passport_1.default.authenticate('naver'));
 router.get('/kakao/callback', passport_1.default.authenticate('kakao', { failureRedirect: '/?error=카카오로그인 실패' }), (req, res) => {
-    res.redirect('/api'); // 성공 시 이동
+    const user = req.user;
+    console.log('카카오 로그인 유저 데이터', user);
+    // JWT 토큰 생성 (선택사항)
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign({ id: user.snsId, nickname: user.nick, email: user.email, provider: user.provider, accessToken: user.accessToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // 클라이언트로 리다이렉트 
+    res.redirect(`http://localhost:5173/callback?token=${token}&nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.snsId}&accessToken=${user.accessToken}`);
+});
+router.get('/naver/callback', passport_1.default.authenticate('naver', { failureRedirect: '/?error=네이버 로그인 실패' }), (req, res) => {
+    const user = req.user;
+    console.log('네이버 로그인 유저 데이터', user);
+    // JWT 토큰 생성 (선택사항)
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign({ id: user.id, nickname: user.nick, email: user.email, provider: user.provider, accessToken: user.accessToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // 클라이언트로 리다이렉트 
+    res.redirect(`http://localhost:5173/callback?token=${token}&nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.snsId}&accessToken=${user.accessToken}`);
 });
 // 핸들러 타입을 명시적으로 지정
 const kakaoLogoutHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     try {
         const ACCESS_TOKEN = (_a = req.user) === null || _a === void 0 ? void 0 : _a.accessToken;
+        console.log('서버측 엑세스 토큰 :', (_b = req.user) === null || _b === void 0 ? void 0 : _b.accessToken);
         if (!ACCESS_TOKEN) {
             res.status(400).json({ message: 'Access token not found' });
             return; // 여기서 반환하여 Promise<void>를 보장
@@ -65,4 +82,53 @@ const kakaoLogoutHandler = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 router.get('/kakao/logout', kakaoLogoutHandler);
+const naverLogoutHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const ACCESS_TOKEN = (_a = req.user) === null || _a === void 0 ? void 0 : _a.accessToken;
+        console.log('서버측 엑세스 토큰 :', ACCESS_TOKEN);
+        if (!ACCESS_TOKEN) {
+            res.status(400).json({ message: 'Access token not found' });
+            return;
+        }
+        // 네이버 액세스 토큰 검증 후 세션 로그아웃
+        try {
+            // 네이버 로그아웃 API 호출 (엔드포인트 확인 필요)
+            const response = yield (0, axios_1.default)({
+                method: 'get',
+                url: 'https://openapi.naver.com/v1/nid/logout',
+                headers: {
+                    Authorization: `Bearer ${ACCESS_TOKEN}`,
+                },
+            });
+            console.log('네이버 로그아웃 응답:', response.data);
+        }
+        catch (apiError) {
+            console.warn('네이버 로그아웃 API 호출 실패:', apiError);
+            // 계속 진행
+        }
+        // Express의 로그아웃 처리
+        yield new Promise((resolve, reject) => {
+            req.logout((err) => {
+                if (err)
+                    return reject(err);
+                resolve();
+            });
+        });
+        // 세션 종료
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Session destruction error:', err);
+                res.status(500).json({ message: 'Failed to destroy session' });
+                return;
+            }
+            res.redirect('/api');
+        });
+    }
+    catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).json({ message: 'Logout failed', error });
+    }
+});
+router.get('/naver/logout', naverLogoutHandler);
 exports.default = router;
