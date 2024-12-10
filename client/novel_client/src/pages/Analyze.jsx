@@ -1,7 +1,5 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
-import Fantasy from './Genre/Fantasy';
-import {useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
 const Analyze = () => {
@@ -13,9 +11,6 @@ const Analyze = () => {
         navigate(`/Analyze/${event.target.value}`)
     };
     console.log('선택 박스 벨류 :', selectVal)
-
-    
-
     return (
         <div className="h-lvh bg-gradient-to-b from-[#dcddd3] via-[#e2e3dc] to-[#dcddd3] shadow-inner-corner p-24">
             <div className="bg-[#434448] p-4 shadow-inner-corner rounded-2xl">

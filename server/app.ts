@@ -52,7 +52,6 @@ app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter)
 app.set('port', process.env.PORT || 8001);
 app.set('view engine', 'html');
-app.use('/api/img', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/post', postRouter);
 
 app.use(morgan('dev')) // 개발 모드로 설정 

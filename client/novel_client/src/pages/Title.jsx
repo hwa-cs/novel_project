@@ -1,11 +1,9 @@
-import TextTypingAni from "../components/TypingAnimation";
 import Typewriter from 'typewriter-effect';
-import {useState, Component} from 'react'
+import { useState } from 'react'
 import { getModelApi } from '../api/novelApi'; // API 요청 함수
 import { FaSpinner } from "react-icons/fa";
 
 const Title = () => {
-  const [content, setContent] = useState("");  
   const [loading, setLoading] = useState(false)
   const [title, setTitle] = useState('');
   const [text, setText] = useState('')

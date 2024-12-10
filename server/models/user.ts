@@ -1,5 +1,6 @@
-import Sequelize, { NonAttribute, BelongsToManyAddAssociationMixin, CreationOptional, DataTypes } from 'sequelize';
+import Sequelize, { BelongsToManyAddAssociationMixin, CreationOptional, DataTypes } from 'sequelize';
 import Post from './post';
+import Cover from './cover';
 
 class User extends Sequelize.Model {
     declare id: CreationOptional<number>;
@@ -12,10 +13,6 @@ class User extends Sequelize.Model {
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
     declare deletedAt: CreationOptional<Date>;
-    declare Followers?: NonAttribute<User[]>;
-    declare Followings?: NonAttribute<User[]>;
-
-    declare addFollowing: BelongsToManyAddAssociationMixin<User, number>;
 
     static initiate(sequelize: Sequelize.Sequelize) {
         User.init({
@@ -59,16 +56,7 @@ class User extends Sequelize.Model {
 
     static associate() {
         User.hasMany(Post);
-        User.belongsToMany(User, {
-            foreignKey: 'followingId',
-            as: 'Followers',
-            through: 'Follow',
-        });
-        User.belongsToMany(User, {
-            foreignKey: 'followerId',
-            as: 'Followings',
-            through: 'Follow',
-        });
+        User.hasMany(Cover);
     }
 };
 

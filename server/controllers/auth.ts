@@ -3,21 +3,23 @@ import passport from 'passport';
 import User from '../models/user';
 import Post from '../models/post';
 import Cover from '../models/cover';
-import { RequestHandler } from 'express';
+import { RequestHandler, NextFunction, Request, Response } from 'express';
 
-const join: RequestHandler = async (req, res, next) => {
+const join = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { email, nick, password } = req.body;
 
   // 입력 데이터 유효성 검사
   if (!email || !nick || !password) {
-    return res.status(400).json({ error: '모든 필드를 입력해주세요.' });
+    res.status(400).json({ error: '모든 필드를 입력해주세요.' });
+    return;
   }
 
   try {
     // 이미 존재하는 사용자 확인
     const exUser = await User.findOne({ where: { email } });
     if (exUser) {
-      return res.status(409).json({ error: '이미 가입된 이메일입니다.' });
+      res.status(409).json({ error: '이미 가입된 이메일입니다.' });
+      return;
     }
 
     // 비밀번호 해시 생성
@@ -30,33 +32,15 @@ const join: RequestHandler = async (req, res, next) => {
       password: hash,
     });
 
-    return res.status(201).json({ success: '회원가입이 성공적으로 완료되었습니다.' });
+    res.status(201).json({ success: '회원가입이 성공적으로 완료되었습니다.' });
+    return;
   } catch (error) {
     console.error('회원가입 중 에러 발생:', error);
-    return res.status(500).json({ error: '서버 에러가 발생했습니다. 다시 시도해주세요.' });
+    res.status(500).json({ error: '서버 에러가 발생했습니다. 다시 시도해주세요.' });
+    return;
   }
 };
 
-
-// const login: RequestHandler = (req, res, next) => {
-//   passport.authenticate('local', (authError: Error | null, user: Express.User | false, info: { message: string }) => {
-//   if (authError) {
-//     console.error(authError);
-//     return next(authError);
-//   }
-//   if (!user) {
-//     return res.redirect(`/api/?error=${info.message}`);
-//   }
-//   return req.login(user, (loginError) => {
-//     if (loginError) {
-//       console.error(loginError);
-//       return next(loginError);
-//     }
-//     return res.redirect('/api');
-//   });
-// })(req, res, next);
-//  // 미들웨어 내의 미들웨어에는 (req, res, next)를 붙입니다.
-// };
 const login: RequestHandler = async (req, res, next) => {
   passport.authenticate('local', async (authError: Error | null, user: Express.User | false, info: { message: string }) => {
     if (authError) {

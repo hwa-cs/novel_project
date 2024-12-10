@@ -1,7 +1,7 @@
 
 import { getNovelApi } from '../../api/novelApi'; // API 요청 함수
 import { useState } from 'react';
-import { Link,useNavigate } from'react-router-dom';
+import { Link, useNavigate } from'react-router-dom';
 
 const Join = () => {
   const navigate = useNavigate();  // 페이지 이동을 위한 navigate

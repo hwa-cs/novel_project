@@ -25,7 +25,7 @@ export default () => {
                 // 새로운 사용자 생성
                 const newUser = await User.create({
                     name: profile.displayName,
-                    email: profile.emails[0].value,
+                    email: profile.emails?.[0].value,
                     nick: profile.displayName,
                     provider: 'naver',
                     accessToken: accessToken || ''

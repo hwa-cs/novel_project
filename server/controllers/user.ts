@@ -1,12 +1,17 @@
-import { RequestHandler } from 'express';
-import User from '../models/user';
+import { RequestHandler, Request, Response, NextFunction } from 'express';
 import Post from '../models/post';
 import Cover from '../models/cover';
 import passport from 'passport';
 
-const userData: RequestHandler = async (req, res, next) => {
+
+
+const userData = async (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate('local', async (authError: Error | null, user: Express.User | false, info: { message: string }) => {
     try {
+        if (!req.user) {
+            return res.status(401).json({ error: "Unauthorized: User not found" });
+          }
+
         console.log('유저 유제!! :', req.user.id)
 
         const id = req.user.id

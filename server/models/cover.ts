@@ -1,4 +1,4 @@
-import Sequelize, { BelongsToManyAddAssociationMixin, CreationOptional } from 'sequelize'
+import Sequelize, { CreationOptional } from 'sequelize'
 import User from './user'
 
 class Cover extends Sequelize.Model {
@@ -23,13 +23,10 @@ class Cover extends Sequelize.Model {
         charset: 'utf8mb4',
         collate: 'utf8mb4_general_ci',
       });
-    
-
       }
       static associate() {
         Cover.belongsTo(User);
         }
       }
-
 
 export default Cover

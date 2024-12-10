@@ -1,19 +1,29 @@
-import Hashtag  from "../models/hashtag"
 import Post  from "../models/post"
 import Cover from "../models/cover"
 import axios from "axios"
 import fs from 'fs'
+import { RequestHandler, NextFunction, Request, Response } from 'express';
+import { CustomRequest } from '../types/index';
 
-exports.afterUploadImage = (req, res) => {
-    console.log(req.file)
-    res.json({ url: `/img/${req.file.filename}` })
-}
 
-exports.uploadPost = async(req, res, next) => {
+const uploadPost = async(req: CustomRequest, res:Response, next: NextFunction): Promise<void> => {
     //req.body.content, req.body.url 이 프론트에서 넘어온다
     try{
-        console.log('단락생성 모델 실행중 ~~')
+        if (!req.user) {
+            res.status(401).json({ error: "Unauthorized: User not found" });
+            return;
+          }
+          
+          // 예시: req.body가 올바르게 정의되었는지 체크
+          if (!req.body.content) {
+            res.status(400).json({ error: "Content is required" });
+            return;
+          }
+
         const prompt = req.body.content
+
+
+        console.log('단락생성 모델 실행중 ~~')
         console.log('프롬프트 :',`${prompt}`)
         const response = await axios({
             method: 'post',
@@ -47,39 +57,37 @@ exports.uploadPost = async(req, res, next) => {
         }));
         
         // 결과 반환
-        return res.status(200).json({
-            success: '작성 되었습니다.',
-            posts: postData
+        res.status(200).json({
+        success: '작성 되었습니다.',
+        posts: postData,
         });
+        return;
     } catch(error){
         console.error(error)
         next(error)
+        // 오류 처리 후 반드시 반환
+        res.status(500).json({ error: '서버 오류' });
+        return;
     }
     
 }
 
-exports.deletePost = async (req, res, next) => {
-    try {
-        // req.params.id에서 게시물 ID를 가져옵니다.
-        const deletePost = await Post.destroy({
-            where: { id: req.params.id }
-        });
-
-        // 삭제가 성공적으로 이루어졌는지 확인
-        if (deletePost) {
-            res.status(200).send('게시물이 삭제되었습니다.');
-        } else {
-            res.status(404).send('게시물이 존재하지 않습니다.');
-        }
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
-};
-
-
-exports.makeCover = async(req, res, next) => {
+const makeCover = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     //req.body.content, req.body.url 이 프론트에서 넘어온다
+    // void: 반환값이 없음을 의미합니다. 비동기 함수에서 실제로 반환할 값이 없고, 단지 작업을 수행하기만 하는 경우에 사용됩니다.
+    // 사용 예시: 데이터베이스에 기록하거나 API 요청을 보내고, 그 결과에 대해 추가 처리가 필요 없을 때 사용됩니다.
+    // 특징: 반환 값이 없기 때문에 후속 작업을 위해 반환된 값을 사용할 수 없습니다.
+
+    if (!req.user) {
+        res.status(401).json({ error: "Unauthorized: User not found" });
+        return;
+      }
+      
+      // 예시: req.body가 올바르게 정의되었는지 체크
+      if (!req.body.content) {
+        res.status(400).json({ error: "Content is required" });
+        return;
+      }
     try{
         console.log('표지생성 모델 실행중 ~~')
         const prompt = req.body.content
@@ -101,7 +109,7 @@ exports.makeCover = async(req, res, next) => {
         // 파일로 저장
         const fileName = `${req.user.id}_${Date.now()}.jpg`
 
-        fs.writeFile(`/Users/hwacheolsu/Desktop/novel_project/client/novel_client/public/Images/${fileName}`, imageBuffer, (err) => {
+        fs.writeFile(`/Users/hwacheolsu/Desktop/novel_project/client/novel_client/public/covers/${fileName}`, imageBuffer, (err) => {
             if (err) {
             console.error('이미지 저장 중 오류 발생:', err);
             } else {
@@ -113,7 +121,7 @@ exports.makeCover = async(req, res, next) => {
             UserId: req.user.id,
             makeCover : fileName
         })
-        
+
         const Covers = await Cover.findAll({
             attributes: ['makeCover'],
             where: { userId: req.user.id },
@@ -123,13 +131,19 @@ exports.makeCover = async(req, res, next) => {
         
         
         // 결과 반환
-        return res.status(200).json({
+        res.status(200).json({
             success: '표지 생성 되었습니다.',
             posts: Covers
         });
+        return;
     } catch(error){
         console.error(error)
         next(error)
+        // 오류 처리 후 반드시 반환
+        res.status(500).json({ error: '서버 오류' });
+        return;
     }
     
 }
+
+export {  uploadPost, makeCover, }

@@ -1,6 +1,5 @@
 import Sequelize, { BelongsToManyAddAssociationMixin, CreationOptional } from 'sequelize'
 import User from './user'
-import Hashtag from './hashtag'
 
 class Post extends Sequelize.Model {
     declare id: CreationOptional<number>
@@ -8,7 +7,6 @@ class Post extends Sequelize.Model {
     declare makeContent: string
     declare createdAt: CreationOptional<Date>
     declare updatedAt: CreationOptional<Date>
-    declare addHashtags: BelongsToManyAddAssociationMixin<Hashtag, number>
     
     static initiate(sequelize: Sequelize.Sequelize) {
       Post.init({
@@ -35,7 +33,6 @@ class Post extends Sequelize.Model {
       }
       static associate() {
           Post.belongsTo(User);
-          Post.belongsToMany(Hashtag, {through: 'PostHashtag'});
               // as, foreignkey 미작성은 햇갈릴 염려 없어서 생략 가능
         }
       }

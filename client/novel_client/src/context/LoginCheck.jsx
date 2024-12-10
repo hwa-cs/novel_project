@@ -1,6 +1,4 @@
 import { createContext, useState, useEffect } from 'react'
-import Session from 'react-session-api'
-import { getNovelApi } from '../api/novelApi';  // API 요청을 보내는 함수
 // context 사용하기 위해서 createContext 임폴트
 
 export const LoginCheckContext = createContext(false)

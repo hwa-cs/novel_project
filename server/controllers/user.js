@@ -18,6 +18,9 @@ const passport_1 = __importDefault(require("passport"));
 const userData = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     passport_1.default.authenticate('local', (authError, user, info) => __awaiter(void 0, void 0, void 0, function* () {
         try {
+            if (!req.user) {
+                return res.status(401).json({ error: "Unauthorized: User not found" });
+            }
             console.log('유저 유제!! :', req.user.id);
             const id = req.user.id;
             // 포스트 데이터 비동기적으로 가져오기

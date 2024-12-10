@@ -1,18 +1,8 @@
-import { LoginCheckContext } from "../context/LoginCheck";
-import { useEffect, useState, useContext } from 'react';
-import axios from 'axios'
-import { getNovelApi } from '../api/novelApi';
+import { useEffect, useState } from 'react';
 import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
 import { RxDotFilled } from 'react-icons/rx';
 
 const Home = () =>  {
-  const mainMakePosts = [
-    { id: '0', label: 'a', image_path: '' },
-    { id: '1', label: 'b', image_path: '' },
-    { id: '2', label: 'c', image_path: '' },
-    { id: '', label: 'd', image_path: '' },
-  ];
-
   const mainImages = [
     { id: 0, name: "빵을 먹는 꼬마의 비밀", image_path: "/public/images/main1.jpg", description: "빵을 먹는 꼬마" },
     { id: 1, name: "검은 머리 여성의 그림자", image_path: "/public/images/main2.jpg", description: "검은 머리 여성" },

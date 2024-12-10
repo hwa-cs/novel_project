@@ -6,7 +6,7 @@ import { getNovelApi } from '../api/novelApi'; // API 요청 함수
 
 const Cover = () => {
     const [content, setContent] = useState("");  
-    const [makeCover, setMakeCover] = useState({});  // API요청 결과
+    // const [makeCover, setMakeCover] = useState({});  // API요청 결과
     const [loading, setLoading] = useState(false)
     const { LoginCheck } = useContext(LoginCheckContext);  // 로그인 상태 확인
     const navigate = useNavigate();  // 페이지 이동을 위한 navigate
@@ -16,7 +16,6 @@ const Cover = () => {
 
   // 로그인 여부 확인 후, 로그인되어 있지 않으면 로그인 페이지로 이동
     useEffect(() => {
-
         if (!LoginCheck) 
         {alert('로그인이 필요한 페이지입니다.');
             navigate('/Login'); // 로그인 페이지로 리다이렉션
@@ -56,11 +55,11 @@ const Cover = () => {
                         </h1>
                         <div className=" p-4">
                             <input
-                                    value={content}
-                                    onChange={(e) => setContent(e.target.value)}
-                                    className="shadow-sm w-full h-[80px] rounded-2xl text-center"
-                                    placeholder="내용을 입력하세요"
-                                />
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                                className="shadow-sm w-full h-[80px] rounded-2xl text-center"
+                                placeholder="내용을 입력하세요"
+                            />
                         </div>
                         <div className="">
                             <div className="">        
@@ -73,13 +72,12 @@ const Cover = () => {
                                         userCovers.map((a) => (
                                             <img
                                             key={a.makeCover} // 고유 key 추가 (React 경고 방지)
-                                            src={`/public/images/${a.makeCover}`}
+                                            src={`/public/covers/${a.makeCover}`}
                                             alt="cover"
                                             className="w-[200px] h-[300px] rounded-lg"
                                             />
                                         ))
                                     )}
-
                                     </div>
                                     <div className="p-4">
                                         <button onClick={handleCover} disabled={loading} className="p-4 bg-gray-500 w-full bg-[#daf8c6] rounded-2xl hover:bg-[#a1f06c]">
@@ -96,12 +94,11 @@ const Cover = () => {
                         <div className="w-full h-full ">
                             {userCovers.length > 0 && (
                                 <img
-                                    src={`/public/images/${userCovers[0].makeCover}`}
+                                    src={`/public/covers/${userCovers[0].makeCover}`}
                                     alt="cover"
                                     className="w-full h-full rounded-lg"
                                 />
                             )}
-
                         </div>
                     </div>
                 </div>

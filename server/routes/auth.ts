@@ -14,46 +14,36 @@ router.get('/logout', isLoggedIn, logout); // 로그아웃
 router.get('/kakao', passport.authenticate('kakao')); // 카카오 로그인  패스폴트
 router.get('/naver', passport.authenticate('naver'))
 
-router.get(
-  '/kakao/callback',
-  passport.authenticate('kakao', { failureRedirect: '/?error=카카오로그인 실패' }),
-  (req, res) => {
-    const user = req.user;
-    console.log('카카오 로그인 유저 데이터', user)
+router.get('/kakao/callback', passport.authenticate('kakao', { failureRedirect: '/?error=카카오로그인 실패' }), async (req, res): Promise<void> => {
+  const user = req.user;
+  console.log('카카오 로그인 유저',user)
 
-    // JWT 토큰 생성 (선택사항)
-    const jwt = require('jsonwebtoken');
-    const token = jwt.sign(
-      { id: user.snsId, nickname: user.nick, email: user.email, provider: user.provider, accessToken: user.accessToken },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-
-    // 클라이언트로 리다이렉트 
-    res.redirect(`http://localhost:5173/callback?token=${token}&nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.snsId}&accessToken=${user.accessToken}`);
-
+  // user가 존재하는지 확인
+  if (!user) {
+    res.status(400).json({ message: 'User not found' });
+    return; // Promise<void>를 보장
   }
-);
 
-router.get(
-  '/naver/callback',
-  passport.authenticate('naver', { failureRedirect: '/?error=네이버 로그인 실패' }),
-  (req, res) => {
-    const user = req.user;
-    console.log('네이버 로그인 유저 데이터', user)
+  // 클라이언트로 리다이렉트 
+  res.redirect(`http://localhost:5173/callback?nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.id}&accessToken=${user.accessToken}`);
+  return; // 명시적으로 void 반환
+});
 
-    // JWT 토큰 생성 (선택사항)
-    const jwt = require('jsonwebtoken');
-    const token = jwt.sign(
-      { id: user.id, nickname: user.nick, email: user.email, provider: user.provider, accessToken: user.accessToken },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
 
-    // 클라이언트로 리다이렉트 
-    res.redirect(`http://localhost:5173/callback?token=${token}&nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.snsId}&accessToken=${user.accessToken}`);
+router.get('/naver/callback', passport.authenticate('naver', { failureRedirect: '/?error=네이버 로그인 실패' }), async (req, res): Promise<void> => {
+  const user = req.user;
+
+  // user가 존재하는지 확인
+  if (!user) {
+    res.status(400).json({ message: 'User not found' });
+    return; // Promise<void>를 보장
   }
-);
+
+  // 클라이언트로 리다이렉트 
+  res.redirect(`http://localhost:5173/callback?nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.id}&accessToken=${user.accessToken}`);
+  return; // 명시적으로 void 반환
+});
+
 
 
 // 핸들러 타입을 명시적으로 지정

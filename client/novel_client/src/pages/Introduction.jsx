@@ -10,7 +10,7 @@ const Introduction = () => {
                 
                 <h2 className="text-xl font-semibold mb-2">팀 구성</h2>
                 <ul className="list-disc list-inside mb-4">
-                    <li><strong>문 정연 (팀장/분석 및 모델):</strong>  단락 생성 모델 설계 및 구현, 데이터 분석</li>
+                    <li><strong>문 정현 (팀장/분석 및 모델):</strong>  단락 생성 모델 설계 및 구현, 데이터 분석</li>
                     <li><strong>화 철수 (웹 개발):</strong> 프론트엔드와 백엔드 개발</li>
                     <li><strong>최 윤범 (모델 개발):</strong> 제목, 표지 생성 모델 설계 및 구현</li>
                 </ul>

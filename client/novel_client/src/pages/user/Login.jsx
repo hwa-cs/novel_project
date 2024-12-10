@@ -11,7 +11,6 @@ const Login = () => {
     const KakaoCallback = import.meta.env.VITE_KAKAO_CALLBACK;
     const KakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KakaoID}&redirect_uri=${KakaoCallback}`;
 
-
     const NaverID = import.meta.env.VITE_NAVER_ID;
     const NaverCallback = import.meta.env.VITE_NAVER_CALLBACK;
     const NaverAuthURL =`https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NaverID}&state=STATE_STRING&redirect_uri=${NaverCallback}`;

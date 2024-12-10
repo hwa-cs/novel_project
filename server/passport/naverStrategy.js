@@ -21,6 +21,7 @@ exports.default = () => {
         clientSecret: process.env.NAVER_SECRET,
         callbackURL: process.env.NAVER_CALLBACK,
     }, (accessToken, refreshToken, profile, done) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a;
         console.log('profile', profile);
         try {
             const exUser = yield user_1.default.findOne({
@@ -38,7 +39,7 @@ exports.default = () => {
                 // 새로운 사용자 생성
                 const newUser = yield user_1.default.create({
                     name: profile.displayName,
-                    email: profile.emails[0].value,
+                    email: (_a = profile.emails) === null || _a === void 0 ? void 0 : _a[0].value,
                     nick: profile.displayName,
                     provider: 'naver',
                     accessToken: accessToken || ''

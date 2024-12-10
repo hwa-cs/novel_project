@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = __importDefault(require("sequelize"));
 const user_1 = __importDefault(require("./user"));
-const hashtag_1 = __importDefault(require("./hashtag"));
 class Post extends sequelize_1.default.Model {
     static initiate(sequelize) {
         Post.init({
@@ -30,7 +29,6 @@ class Post extends sequelize_1.default.Model {
     }
     static associate() {
         Post.belongsTo(user_1.default);
-        Post.belongsToMany(hashtag_1.default, { through: 'PostHashtag' });
         // as, foreignkey 미작성은 햇갈릴 염려 없어서 생략 가능
     }
 }

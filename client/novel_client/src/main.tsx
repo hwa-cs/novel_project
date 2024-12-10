@@ -13,7 +13,7 @@ import Login from './pages/user/Login';
 import Cover from './pages/Cover';
 import Introduction from './pages/Introduction';
 import Analyze from './pages/Analyze';
-import Callback from './pages/kakao/Callback';
+import Callback from './pages/SnsLogin/Callback';
 import Fantasy from './pages/Genre/Fantasy';
 import Romance from './pages/Genre/Romance';
 import RomanceFantasy from './pages/Genre/RomanceFantasy';

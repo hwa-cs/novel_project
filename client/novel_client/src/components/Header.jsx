@@ -1,7 +1,6 @@
 import Title from './nav/Title';
 import { useContext, useEffect, useState } from 'react';
 import { LoginCheckContext } from '../context/LoginCheck';
-import { getNovelApi } from '../api/novelApi';  // API 요청을 보내는 함수
 import { Link } from'react-router-dom';
 import { handleLogout } from '../pages/user/Logout';
 import {
@@ -18,15 +17,10 @@ const Header= () => {
     { id: 'introduction', label: '팀소개', to: '/introduction' },
   ];
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
   const { LoginCheck, toggleLogin } = useContext(LoginCheckContext)
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-
-  // -------------------------로그아웃----------------------------
-const onLogout = async () => {
-
+  // -------------------------로그아웃(시작)----------------------------
+  const onLogout = async () => {
     if (confirm('로그아웃 하시겠습니까?') === false) {
       return
     }
@@ -39,13 +33,13 @@ const onLogout = async () => {
       }
   };
 
-useEffect(() => {        
-}, ['setLogin'])
-// setLogin 일떄 렌더링
+  useEffect(() => {        
+  }, ['setLogin'])
+  // setLogin 일떄 렌더링
+  
+  // -------------------------로그아웃(끝)----------------------------
 
-  // ----------------------------------------------------------------
-
-const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
     <header className="relative z-50 sticky top-0 bg-[#292929] text-gray-300">
@@ -68,7 +62,7 @@ const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
         </div>
       </div>
 
-            {/* Mobile Menu */}
+            {/* 모바일 크기 */}
       <aside 
         className={`
         fixed top-0 left-0 w-64 h-full bg-gray-800 z-50
