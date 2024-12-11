@@ -1,14 +1,13 @@
-import { Outlet } from 'react-router-dom';
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { useState, ChangeEvent } from 'react';
 
 const Analyze = () => {
-    const [selectVal,setSelectVal] = useState('');
+    const [selectVal,setSelectVal] = useState<string>('');
     const navigate = useNavigate()
 
-    const changeSelectValue = (event) =>{
-        setSelectVal(event.target.value)
-        navigate(`/Analyze/${event.target.value}`)
+    const changeSelectValue = (event: ChangeEvent<HTMLSelectElement>) => {
+        setSelectVal(event.target.value);
+        navigate(`/Analyze/${event.target.value}`);
     };
     console.log('선택 박스 벨류 :', selectVal)
     return (

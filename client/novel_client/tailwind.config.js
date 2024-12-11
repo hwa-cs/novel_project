@@ -12,6 +12,7 @@ export default {
         "books_3-img": "url('/src/assets/books_3.jpg')",
         "paper-img": "url('/src/assets/paper.jpg')",
         "paper_2-img": "url('/src/assets/paper_2.jpg')",
+        "circle-img": "url('/src/assets/circle.jpg')",
       },
       animation: {
         'infinite-scroll': 'infinite-scroll 35s linear infinite',

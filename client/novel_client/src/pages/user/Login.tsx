@@ -6,6 +6,15 @@ import kakaoLogin from '../../../public/Images/kakao_login_large.png';
 import naverLogin from '../../../public/Images/btnG.png';
 import { handleLogout } from './Logout';
 
+interface UserObj {
+    nick: string;
+}
+
+interface ResponseData {
+    message: string;
+    success: boolean;
+}
+
 const Login = () => {
     const KakaoID = import.meta.env.VITE_KAKAO_ID;
     const KakaoCallback = import.meta.env.VITE_KAKAO_CALLBACK;
@@ -14,13 +23,15 @@ const Login = () => {
     const NaverID = import.meta.env.VITE_NAVER_ID;
     const NaverCallback = import.meta.env.VITE_NAVER_CALLBACK;
     const NaverAuthURL =`https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NaverID}&state=STATE_STRING&redirect_uri=${NaverCallback}`;
+  
     const { LoginCheck, toggleLogin } = useContext(LoginCheckContext);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [response, setResponse] = useState(null);
-    const [error, setError] = useState('');
 
-    const handleLogin = async () => {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [response, setResponse] = useState<ResponseData | null>(null);
+    const [error, setError] = useState<string>('');
+
+    const handleLogin = async (): Promise<void> => {
         if (!email || !password) {
             setError('모든 필드를 입력해주세요.');
             return;
@@ -44,23 +55,24 @@ const Login = () => {
 
             toggleLogin();
             setResponse(response.data.message);
-        } catch (error) {
+        } catch (error: any) {
             console.error(error.response?.data || error.message);
             setError(error.response?.data?.error || '로그인에 실패했습니다.');
         }
     };
 
-    const onLogout = async () => {
+    const onLogout = async (): Promise<void> => {
         try {
-            const sessionData = JSON.parse(sessionStorage.getItem('userObj'));
+            const sessionData = JSON.parse(sessionStorage.getItem('userObj') || '{}');
             await handleLogout(sessionData, toggleLogin);
             console.log('로그아웃 성공');
-        } catch (error) {
+        } catch (error: any) {
             setError(error.message);
         }
     };
+    
+    const key = JSON.parse(sessionStorage.getItem('userObj') || '{}');
 
-    const key = JSON.parse(sessionStorage.getItem('userObj'));
 
     return (
         <div className="bg-gradient-to-b from-[#dcddd3] via-[#e2e3dc] to-[#dcddd3] shadow-inner-corner h-screen flex justify-center items-center relative">

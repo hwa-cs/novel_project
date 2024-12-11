@@ -59,13 +59,20 @@ app.use(express.static(path.join(__dirname, 'public'))); // 보안상 다른 폴
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
+app.use(express.static(path.join(__dirname, '../client/novel_client/dist')));
+
+// 2. 모든 경로에 대해 React의 index.html 파일을 반환하는 라우트 설정
+app.get('*', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../client/novel_client/dist', 'index.html'));
+});
+
 app.use('/api', pageRouter)
 nunjucks.configure('views', {
     express: app,
     watch: true,
 });
 
-sequelize.sync({ force: true })
+sequelize.sync({ force: false })
     .then(() => {
         console.log('데이터베이스 연결 성공');
     })

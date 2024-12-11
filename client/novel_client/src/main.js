@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -20,89 +21,80 @@ import RomanceFantasy from './pages/Genre/RomanceFantasy';
 import CurrentFantasy from './pages/Genre/CurrentFantasy';
 import Martial from './pages/Genre/Martial';
 import './index.css';
-
 const queryClient = new QueryClient();
-
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <App />,
+        element: _jsx(App, {}),
         children: [
             {
                 path: '',
-                element: <Home />,
+                element: _jsx(Home, {}),
             },
             {
                 path: 'short',
-                element: <Short />,
+                element: _jsx(Short, {}),
             },
             {
                 path: 'join',
-                element: <Join />,
+                element: _jsx(Join, {}),
             },
             {
                 path: 'login',
-                element: <Login />,
+                element: _jsx(Login, {}),
             },
             {
                 path: 'analyze',
-                element: <Analyze />,
+                element: _jsx(Analyze, {}),
                 children: [
                     {
                         path: 'fantasy',
-                        element: <Fantasy />,
+                        element: _jsx(Fantasy, {}),
                     },
                     {
                         path: 'romance',
-                        element: <Romance />,
+                        element: _jsx(Romance, {}),
                     },
                     {
                         path: 'romanceFantasy',
-                        element: <RomanceFantasy />,
+                        element: _jsx(RomanceFantasy, {}),
                     },
                     {
                         path: 'currentFantasy',
-                        element: <CurrentFantasy />,
+                        element: _jsx(CurrentFantasy, {}),
                     },
                     {
                         path: 'martial',
-                        element: <Martial />,
+                        element: _jsx(Martial, {}),
                     },
                 ],
             },
             {
                 path: 'cover',
-                element: <Cover />,
+                element: _jsx(Cover, {}),
             },
             {
                 path: 'introduction',
-                element: <Introduction />,
+                element: _jsx(Introduction, {}),
             },
             {
                 path: 'reserve',
-                element: <Reserve />,
+                element: _jsx(Reserve, {}),
             },
             {
                 path: 'title',
-                element: <Title />,
+                element: _jsx(Title, {}),
             },
             {
                 path: 'Callback',
-                element: <Callback />,
+                element: _jsx(Callback, {}),
             },
         ],
-        errorElement: <ErrorPage />,
+        errorElement: _jsx(ErrorPage, {}),
     },
 ]);
-
 // createRoot에 전달되는 DOM 요소가 null일 경우 대비
 const rootElement = document.getElementById('root');
 if (rootElement) {
-    createRoot(rootElement).render(
-        <StrictMode>
-            <QueryClientProvider client={queryClient}>
-                <RouterProvider router={router} />
-            </QueryClientProvider>
-        </StrictMode>
-    );
+    createRoot(rootElement).render(_jsx(StrictMode, { children: _jsx(QueryClientProvider, { client: queryClient, children: _jsx(RouterProvider, { router: router }) }) }));
 }

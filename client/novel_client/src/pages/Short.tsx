@@ -1,43 +1,63 @@
-import { useState, useContext, useEffect, useRef } from 'react';
+import { useState, useContext, useEffect, useRef, ChangeEvent } from 'react';
 import { LoginCheckContext } from '../context/LoginCheck';
 import { useNavigate } from 'react-router-dom';
-import FlipPage from 'react-flip-page';
+import FlipPage from 'react-flip-page'; // FlipPage 컴포넌트 및 Ref 타입
 import { getNovelApi } from '../api/novelApi'; // API 요청 함수
 import Typewriter from 'typewriter-effect';
 import { FaSpinner } from "react-icons/fa";
 
-const Short = () => {
+interface Post {
+  content: string;
+  makeContent: string;
+}
+
+const Short: React.FC = () => {
   const { LoginCheck } = useContext(LoginCheckContext);  // 로그인 상태 확인
   const navigate = useNavigate();  // 페이지 이동을 위한 navigate
-  const flipPageRef = useRef(null);  // FlipPage 컴포넌트를 참조하기 위한 ref
-  const userPosts = JSON.parse(sessionStorage.getItem('userPosts'));
-  const [content, setContent] = useState("");
-  const [lastPost, setLastPost] = useState("");
-  const [loading, setLoading] = useState(false)
+  const flipPageRef = useRef<typeof FlipPage | null>(null); // FlipPage 컴포넌트 타입으로 ref 설정
+  const userPosts: Post[] | null = JSON.parse(sessionStorage.getItem('userPosts') || 'null');
+  const [content, setContent] = useState<string>('');
+  const [lastPost, setLastPost] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // ---------------------- 장르 선택 --------------------
+  const [selectVal,setSelectVal] = useState<string>('');
+  const changeSelectValue = (event: ChangeEvent<HTMLSelectElement>) => {
+      setSelectVal(event.target.value);
+  };
+  console.log('선택 박스 벨류 :', selectVal)
+  // ---------------------- 장르 선택 --------------------
+
+
+  const key = JSON.parse(sessionStorage.getItem("userObj") || 'null');
+  const UserId = key?.id;
 
   const handleGoToPage = () => {
-    if (flipPageRef.current) {
+    if (flipPageRef.current && userPosts && userPosts.length) {
       flipPageRef.current.gotoPage(userPosts.length + 1);  // 원하는 페이지로 이동
     }
   };
 
-  const key = JSON.parse(sessionStorage.getItem("userObj"));
-  const UserId = key?.id;
-
-  const handleText = async () => {
+  const handleText = async (): Promise<void> => {
     try {
       if (!loading) {
           setLoading(true);
       }
+      if ( selectVal == '') {
+        alert('장르를 선택하세요.');
+        setLoading(false);
+        return;
+      }
+
       const response = await getNovelApi({
         method: 'POST',
         url: '/api/post', // GET 요청 URL
         withCredentials: true,
-        data: { content, UserId }, // 서버로 보내는 데이터
+        data: { content, UserId, genre: selectVal }, // 서버로 보내는 데이터
       });
 
-      const userPost = response.data.posts;
-      setLastPost(userPost[0].makeContent);
+      const userPost: Post[] = response.data.posts;
+      setLastPost(userPost[0]?.makeContent || '');
       sessionStorage.setItem('userPosts', JSON.stringify(userPost));
 
       // 작성 후 마지막 페이지로 이동
@@ -46,12 +66,13 @@ const Short = () => {
         flipPageRef.current.gotoPage(lastPageIndex);  // 마지막 페이지로 이동
       }
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error.response?.data || error.message); // 에러 처리
+      setLoading(false);
     }
   };
 
-  const ressetText = () => {
+  const ressetText = (): void => {
     setContent("");
     setLastPost("");
   };
@@ -62,7 +83,7 @@ const Short = () => {
     {alert('로그인이 필요한 페이지입니다.');
         navigate('/Login'); // 로그인 페이지로 리다이렉션
       }
-    }, [LoginCheck]);
+    }, [LoginCheck, navigate]);
 
   return (
     <div className="bg-gradient-to-b from-[#dcddd3] via-[#e2e3dc] to-[#dcddd3] shadow-inner-corner p-24">
@@ -160,6 +181,18 @@ const Short = () => {
         <div className="max-w-screen-md mx-auto">
           {/* 텍스트 입력 및 버튼 */}
           <div className="flex items-center gap-4 mb-4">
+            <label>
+            장르 선택 :
+              <select 
+              name="selectedFruit"
+              onChange={changeSelectValue}>
+                  <option key={1} value="martial">무협</option>
+                  <option key={2} value="fantasy">판타지</option>
+                  <option key={3} value="romance_fantasy">로맨스 판타지</option>
+                  <option key={4} value="romance">로맨스</option>
+                  <option key={5} value="current_fantasy">현대 판타지</option>
+              </select>
+            </label>
             <input
               value={content}
               onChange={(e) => setContent(e.target.value)}

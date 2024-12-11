@@ -4,27 +4,39 @@ import { useNavigate } from 'react-router-dom';
 import { LoginCheckContext } from '../context/LoginCheck';
 import { getNovelApi } from '../api/novelApi'; // API 요청 함수
 
+interface UserCover {
+    makeCover: string;
+  }
+  
 const Cover = () => {
-    const [content, setContent] = useState("");  
+    const [content, setContent] = useState<string>(""); 
     // const [makeCover, setMakeCover] = useState({});  // API요청 결과
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState<boolean>(false)
     const { LoginCheck } = useContext(LoginCheckContext);  // 로그인 상태 확인
     const navigate = useNavigate();  // 페이지 이동을 위한 navigate
-    const [mainCover, setMainCover] = useState("");
-    const userCovers = (JSON.parse(sessionStorage.getItem('userCovers')) != null && JSON.parse(sessionStorage.getItem('userCovers')) != undefined && JSON.parse(sessionStorage.getItem('userCovers')))
+    const [mainCover, setMainCover] = useState<string>("");
+    // const userCovers: UserCover[] = (JSON.parse(sessionStorage.getItem('userCovers')) != null && JSON.parse(sessionStorage.getItem('userCovers')) != undefined && JSON.parse(sessionStorage.getItem('userCovers')))
+    const userCovers: UserCover[] = JSON.parse(sessionStorage.getItem('userCovers') || '[]'); // 과거 커버 이미지
     // userCovers 가 null이나 undefined이 아니면 실행
 
   // 로그인 여부 확인 후, 로그인되어 있지 않으면 로그인 페이지로 이동
     useEffect(() => {
         if (!LoginCheck) 
-        {alert('로그인이 필요한 페이지입니다.');
+            {alert('로그인이 필요한 페이지입니다.');
             navigate('/Login'); // 로그인 페이지로 리다이렉션
         }
-    }, [LoginCheck]);
+    }, [LoginCheck, navigate]);
     
     const handleCover = async () => {
-        const key = JSON.parse(sessionStorage.getItem("userObj"));
+        const key = JSON.parse(sessionStorage.getItem("userObj") || 'null');
         const UserId = key?.id;
+        console.log("UserId: ",  UserId)
+
+        if (!UserId) {
+          alert("사용자 정보가 없습니다.");
+          return;
+        }
+
         try {
             if (!loading) {
                 setLoading(true);
@@ -40,8 +52,9 @@ const Cover = () => {
           setMainCover(makeCover[0].makeCover);
           sessionStorage.setItem('userCovers', JSON.stringify(makeCover));
           setLoading(false);
-        } catch (error) {
+        } catch (error: any) {
           console.error(error.response?.data || error.message); // 에러 처리
+          setLoading(false);
         }
       };
 
@@ -72,7 +85,7 @@ const Cover = () => {
                                         userCovers.map((a) => (
                                             <img
                                             key={a.makeCover} // 고유 key 추가 (React 경고 방지)
-                                            src={`/public/covers/${a.makeCover}`}
+                                            src={`/covers/${a.makeCover}`}
                                             alt="cover"
                                             className="w-[200px] h-[300px] rounded-lg"
                                             />
@@ -94,7 +107,7 @@ const Cover = () => {
                         <div className="w-full h-full ">
                             {userCovers.length > 0 && (
                                 <img
-                                    src={`/public/covers/${userCovers[0].makeCover}`}
+                                    src={`/covers/${userCovers[0].makeCover}`}
                                     alt="cover"
                                     className="w-full h-full rounded-lg"
                                 />

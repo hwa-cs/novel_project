@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "jsx" : "react-jsx",
+    "jsxImportSource": "react",
     "module": "ESNext",
-    "jsx": "react-jsx",
-    "strict": true,
+    "target": "ESNext",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "resolveJsonModule": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   }
 }

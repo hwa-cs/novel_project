@@ -1,25 +1,31 @@
-
 import { getNovelApi } from '../../api/novelApi'; // API 요청 함수
 import { useState } from 'react';
-import { Link, useNavigate } from'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-const Join = () => {
+interface ResponseData {
+  success: boolean;
+  message: string;
+}
+
+const Join: React.FC = () => {
   const navigate = useNavigate();  // 페이지 이동을 위한 navigate
-  const [email, setEmail] = useState('');
-  const [nick, setNick] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordCheck, setPasswordCheck] = useState('');
-  const [response, setResponse] = useState(null); // API 요청 결과
-  const [loading, setLoading] = useState(false); // 로딩 상태
-  const [error, setError] = useState(''); // 에러 메시지
+  const [email, setEmail] = useState<string>('');
+  const [nick, setNick] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [passwordCheck, setPasswordCheck] = useState<string>('');
+  const [response, setResponse] = useState<ResponseData | null>(null); // API 요청 결과
+  const [loading, setLoading] = useState<boolean>(false); // 로딩 상태
+  const [error, setError] = useState<string>(''); // 에러 메시지
+
   const passwordRegEx = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,20}$/;
-  const emailCheck = (email) => {
+
+  const emailCheck = (email: string): boolean => {
     const emailRegEx = /^[A-Za-z0-9]([A-Za-z0-9._-]*[A-Za-z0-9])?@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     return emailRegEx.test(email); // 형식에 맞을 경우 true 리턴
   }
 
 
-  const handleJoin = async () => {
+  const handleJoin = async (): Promise<void> => {
     // 간단한 유효성 검사
     if (!email || !nick || !password) {
       setError('모든 필드를 입력해주세요.');
@@ -54,7 +60,7 @@ const Join = () => {
       setNick('');
       setPassword('');
       navigate('/Login'); // 로그인 페이지로 리다이렉션
-    } catch (error) {
+    } catch (error: any) {
       console.error(error.response?.data || error.message);
       setError(error.response?.data?.error || '회원가입에 실패했습니다.');
     } finally {

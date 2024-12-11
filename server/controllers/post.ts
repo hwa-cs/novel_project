@@ -14,21 +14,29 @@ const uploadPost = async(req: CustomRequest, res:Response, next: NextFunction): 
             return;
           }
           
-          // 예시: req.body가 올바르게 정의되었는지 체크
-          if (!req.body.content) {
-            res.status(400).json({ error: "Content is required" });
-            return;
-          }
+        // 예시: req.body가 올바르게 정의되었는지 체크
+        if (!req.body.content) {
+        res.status(400).json({ error: "Content is required" });
+        return;
+        }
+
+        // 예시: req.body가 올바르게 정의되었는지 체크
+        if (!req.body.genre) {
+        res.status(400).json({ error: "Genre is required" });
+        return;
+        }
 
         const prompt = req.body.content
-
+        const genre = req.body.genre
 
         console.log('단락생성 모델 실행중 ~~')
         console.log('프롬프트 :',`${prompt}`)
+        console.log('장르 :',`${genre}`)
+
         const response = await axios({
             method: 'post',
             url: 'http://192.168.1.251:5000/content',
-            data: { passage: prompt },
+            data: { passage: prompt, genre: genre },
             headers: {
                 accept: 'application/json',
                 'Content-Type': 'application/json',
@@ -77,7 +85,8 @@ const makeCover = async (req: Request, res: Response, next: NextFunction): Promi
     // void: 반환값이 없음을 의미합니다. 비동기 함수에서 실제로 반환할 값이 없고, 단지 작업을 수행하기만 하는 경우에 사용됩니다.
     // 사용 예시: 데이터베이스에 기록하거나 API 요청을 보내고, 그 결과에 대해 추가 처리가 필요 없을 때 사용됩니다.
     // 특징: 반환 값이 없기 때문에 후속 작업을 위해 반환된 값을 사용할 수 없습니다.
-
+    console.log('req.user :',req.user)
+    console.log('req.body.content :',req.body.content)
     if (!req.user) {
         res.status(401).json({ error: "Unauthorized: User not found" });
         return;
@@ -109,7 +118,7 @@ const makeCover = async (req: Request, res: Response, next: NextFunction): Promi
         // 파일로 저장
         const fileName = `${req.user.id}_${Date.now()}.jpg`
 
-        fs.writeFile(`/Users/hwacheolsu/Desktop/novel_project/client/novel_client/public/covers/${fileName}`, imageBuffer, (err) => {
+        fs.writeFile(`/Users/hwacheolsu/Desktop/novel_project/client/novel_client/dist/covers/${fileName}`, imageBuffer, (err) => {
             if (err) {
             console.error('이미지 저장 중 오류 발생:', err);
             } else {

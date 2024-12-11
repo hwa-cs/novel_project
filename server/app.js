@@ -48,12 +48,17 @@ app.use('/api/post', post_1.default);
 app.use((0, morgan_1.default)('dev')); // 개발 모드로 설정 
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public'))); // 보안상 다른 폴더는 접근 불가능하지만 public폴더는 허용
 app.use((0, cookie_parser_1.default)(process.env.COOKIE_SECRET));
+app.use(express_1.default.static(path_1.default.join(__dirname, '../client/novel_client/dist')));
+// 2. 모든 경로에 대해 React의 index.html 파일을 반환하는 라우트 설정
+app.get('*', (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, '../client/novel_client/dist', 'index.html'));
+});
 app.use('/api', page_1.default);
 nunjucks_1.default.configure('views', {
     express: app,
     watch: true,
 });
-models_1.sequelize.sync({ force: true })
+models_1.sequelize.sync({ force: false })
     .then(() => {
     console.log('데이터베이스 연결 성공');
 })
