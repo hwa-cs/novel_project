@@ -50,7 +50,7 @@ const Header: React.FC = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <header className="relative z-50 sticky top-0 bg-[#292929] text-gray-300">
+    <header className="z-50 sticky top-0 bg-[#292929] text-gray-300">
       <div className="container px-4 mx-auto flex justify-between items-center h-14">
         <Title />
         <nav className="hidden md:flex space-x-6">

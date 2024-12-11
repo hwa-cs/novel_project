@@ -93,7 +93,7 @@ const Cover = () => {
                                     )}
                                     </div>
                                     <div className="p-4">
-                                        <button onClick={handleCover} disabled={loading} className="p-4 bg-gray-500 w-full bg-[#daf8c6] rounded-2xl hover:bg-[#a1f06c]">
+                                        <button onClick={handleCover} disabled={loading} className="p-4 w-full bg-[#daf8c6] rounded-2xl hover:bg-[#a1f06c]">
                                             <span className="flex items-center justify-center">
                                                 {loading? <FaSpinner /> : '출력'}
                                             </span>
