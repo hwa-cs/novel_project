@@ -8,6 +8,8 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const morgan_1 = __importDefault(require("morgan"));
 const path_1 = __importDefault(require("path"));
 const express_session_1 = __importDefault(require("express-session"));
+const helmet_1 = __importDefault(require("helmet"));
+const hpp_1 = __importDefault(require("hpp"));
 const nunjucks_1 = __importDefault(require("nunjucks"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const models_1 = require("./models");
@@ -26,15 +28,20 @@ app.use((0, cors_1.default)({ origin: true, credentials: true }));
 // 특정 도메인만 허용
 // app.use(cors({ origin: 'http://localhost:5173' }));
 // 1. express-session 미들웨어 먼저 설정
-app.use((0, express_session_1.default)({
+const sessionOption = {
     resave: false,
     saveUninitialized: false,
     secret: process.env.COOKIE_SECRET,
     cookie: {
         httpOnly: true,
-        secure: false, // 개발 환경에서는 false로 설정
+        secure: false,
     },
-}));
+};
+if (process.env.NODE_ENV === 'production') {
+    sessionOption.proxy = true;
+    // sessionOption.cookie.secure = true;
+}
+app.use((0, express_session_1.default)(sessionOption));
 // 2. passport 초기화와 세션 설정 
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
@@ -45,7 +52,19 @@ app.use('/api/auth', auth_1.default);
 app.set('port', process.env.PORT || 8001);
 app.set('view engine', 'html');
 app.use('/api/post', post_1.default);
-app.use((0, morgan_1.default)('dev')); // 개발 모드로 설정 
+if (process.env.NODE_ENV === 'production') {
+    app.enable('trust proxy');
+    app.use((0, hpp_1.default)());
+    app.use((0, helmet_1.default)({
+        contentSecurityPolicy: false,
+        crossOriginEmbedderPolicy: false,
+        crossOriginResourcePolicy: false,
+    }));
+    app.use((0, morgan_1.default)('combined'));
+}
+else {
+    app.use((0, morgan_1.default)('dev')); // 개발 모드로 설정 
+}
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public'))); // 보안상 다른 폴더는 접근 불가능하지만 public폴더는 허용
 app.use((0, cookie_parser_1.default)(process.env.COOKIE_SECRET));
 app.use(express_1.default.static(path_1.default.join(__dirname, '../client/novel_client/dist')));

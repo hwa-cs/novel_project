@@ -12,13 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderJoin = exports.renderMain = exports.renderProfile = exports.renderReserve_3 = exports.renderReserve_2 = exports.renderReserve_1 = void 0;
+exports.renderJoin = exports.renderMain = void 0;
 const user_1 = __importDefault(require("../models/user"));
 const post_1 = __importDefault(require("../models/post"));
-const renderProfile = (req, res) => {
-    res.render('profile', { title: '내 정보 - Novel' });
-};
-exports.renderProfile = renderProfile;
 const renderJoin = (req, res) => {
     res.render('join', { title: '회원가입 - Novel' });
 };
@@ -43,15 +39,3 @@ const renderMain = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.renderMain = renderMain;
-const renderReserve_1 = (req, res) => {
-    res.render('reserve_1', { title: 'reserve_1' });
-};
-exports.renderReserve_1 = renderReserve_1;
-const renderReserve_2 = (req, res) => {
-    res.render('reserve_2', { title: 'reserve_2' });
-};
-exports.renderReserve_2 = renderReserve_2;
-const renderReserve_3 = (req, res) => {
-    res.render('reserve_3', { title: 'reserve_3' });
-};
-exports.renderReserve_3 = renderReserve_3;

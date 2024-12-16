@@ -17,6 +17,7 @@ const post_1 = __importDefault(require("../models/post"));
 const cover_1 = __importDefault(require("../models/cover"));
 const axios_1 = __importDefault(require("axios"));
 const fs_1 = __importDefault(require("fs"));
+const sanitize_html_1 = __importDefault(require("sanitize-html"));
 const uploadPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     //req.body.content, req.body.url 이 프론트에서 넘어온다
     try {
@@ -24,17 +25,19 @@ const uploadPost = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             res.status(401).json({ error: "Unauthorized: User not found" });
             return;
         }
-        // 예시: req.body가 올바르게 정의되었는지 체크
+        // req.body.content를 sanitize-html을 이용해 클린징
         if (!req.body.content) {
             res.status(400).json({ error: "Content is required" });
             return;
         }
-        // 예시: req.body가 올바르게 정의되었는지 체크
-        if (!req.body.genre) {
-            res.status(400).json({ error: "Genre is required" });
-            return;
-        }
-        const prompt = req.body.content;
+        // sanitize-html을 사용하여 입력값에서 불필요한 HTML 태그나 스크립트를 제거
+        const sanitizedContent = (0, sanitize_html_1.default)(req.body.content, {
+            allowedTags: ['b', 'i', 'em', 'strong', 'p', 'a', 'ul', 'ol', 'li'], // 허용할 태그만 지정
+            allowedAttributes: {
+                '*': ['href'], // 허용할 속성만 지정
+            },
+        });
+        const prompt = sanitizedContent; // 클린징된 콘텐츠
         const genre = req.body.genre;
         console.log('단락생성 모델 실행중 ~~');
         console.log('프롬프트 :', `${prompt}`);
@@ -88,8 +91,6 @@ const makeCover = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     // void: 반환값이 없음을 의미합니다. 비동기 함수에서 실제로 반환할 값이 없고, 단지 작업을 수행하기만 하는 경우에 사용됩니다.
     // 사용 예시: 데이터베이스에 기록하거나 API 요청을 보내고, 그 결과에 대해 추가 처리가 필요 없을 때 사용됩니다.
     // 특징: 반환 값이 없기 때문에 후속 작업을 위해 반환된 값을 사용할 수 없습니다.
-    console.log('req.user :', req.user);
-    console.log('req.body.content :', req.body.content);
     if (!req.user) {
         res.status(401).json({ error: "Unauthorized: User not found" });
         return;
@@ -99,10 +100,17 @@ const makeCover = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         res.status(400).json({ error: "Content is required" });
         return;
     }
+    // sanitize-html을 사용하여 입력값을 클린징
+    const sanitizedContent = (0, sanitize_html_1.default)(req.body.content, {
+        allowedTags: ['b', 'i', 'em', 'strong', 'p', 'a', 'ul', 'ol', 'li'], // 허용할 태그
+        allowedAttributes: {
+            '*': ['href'], // 허용할 속성
+        },
+    });
     try {
-        console.log('표지생성 모델 실행중 ~~');
-        const prompt = req.body.content;
-        console.log('프롬프트 :', `${prompt}`);
+        // console.log('표지생성 모델 실행중 ~~')
+        const prompt = sanitizedContent; // 클린징된 콘텐츠
+        // console.log('프롬프트 :', `${prompt}`)
         const response = yield (0, axios_1.default)({
             method: 'post',
             url: 'http://192.168.1.251:5000/image',

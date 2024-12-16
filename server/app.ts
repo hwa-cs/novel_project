@@ -3,6 +3,8 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import path from 'path';
 import session from 'express-session';
+import helmet from 'helmet'
+import hpp from 'hpp'
 import nunjucks from 'nunjucks';
 import dotenv from 'dotenv';
 import { sequelize } from './models';
@@ -30,17 +32,21 @@ app.use(cors({ origin: true, credentials: true }));
 
 
 // 1. express-session 미들웨어 먼저 설정
-app.use(
-    session({
-        resave: false,
-        saveUninitialized: false,
-        secret: process.env.COOKIE_SECRET!,
-        cookie: {
-            httpOnly: true,
-            secure: false,  // 개발 환경에서는 false로 설정
-        },
-    })
-);
+const sessionOption: session.SessionOptions = {
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.COOKIE_SECRET!,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+    },
+  };
+  if (process.env.NODE_ENV === 'production') {
+    sessionOption.proxy = true;
+    // sessionOption.cookie.secure = true;
+  }
+
+app.use(session(sessionOption));
 
 // 2. passport 초기화와 세션 설정 
 app.use(passport.initialize());
@@ -54,7 +60,18 @@ app.set('port', process.env.PORT || 8001);
 app.set('view engine', 'html');
 app.use('/api/post', postRouter);
 
-app.use(morgan('dev')) // 개발 모드로 설정 
+if (process.env.NODE_ENV === 'production') {
+    app.enable('trust proxy')
+    app.use(hpp())
+    app.use(helmet({
+      contentSecurityPolicy: false,
+      crossOriginEmbedderPolicy: false,
+      crossOriginResourcePolicy: false,
+    }))
+    app.use(morgan('combined'))
+} else {
+    app.use(morgan('dev')) // 개발 모드로 설정 
+}
 app.use(express.static(path.join(__dirname, 'public'))); // 보안상 다른 폴더는 접근 불가능하지만 public폴더는 허용
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
