@@ -59,6 +59,7 @@ if (process.env.NODE_ENV === 'production') {
         contentSecurityPolicy: false,
         crossOriginEmbedderPolicy: false,
         crossOriginResourcePolicy: false,
+        crossOriginOpenerPolicy: { policy: 'unsafe-none' }
     }));
     app.use((0, morgan_1.default)('combined'));
 }
