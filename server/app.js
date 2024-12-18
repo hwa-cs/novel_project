@@ -33,8 +33,6 @@ const options = {
 (0, passport_2.default)();
 // 모든 도메인에서의 요청 허용
 app.use((0, cors_1.default)({ origin: true, credentials: true }));
-// 특정 도메인만 허용
-// app.use(cors({ origin: 'http://localhost:5173' }));
 app.use((0, cookie_parser_1.default)(process.env.COOKIE_SECRET));
 // express-session 미들웨어 설정
 const sessionOption = {
@@ -105,13 +103,8 @@ const errorHandler = (err, req, res, next) => {
     res.render('error');
 };
 app.use(errorHandler);
-// HTTP에서 HTTPS로 리디렉션 (리디렉션을 하기 위해 Response 타입을 명시적으로 지정)
-http_1.default.createServer((req, res) => {
-    // req와 res를 Express 타입으로 처리
-    const expressReq = req;
-    const expressRes = res;
-    expressRes.redirect(301, `https://${expressReq.headers.host}${expressReq.url}`);
-}).listen(80, () => {
+// HTTP에서 HTTPS로 리디렉션 (이제 express가 자동으로 처리)
+http_1.default.createServer(app).listen(80, () => {
     console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
 });
 // HTTPS 서버로 443 포트에서 서비스
