@@ -67,7 +67,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
             }
             try {
                 // 사용자 정보 추출
-                const data = { 'id': user.id, 'email': user.email, 'nick': user.nick, 'provider': user.provider };
+                const data = { 'id': user.id, 'email': user.email, 'nick': user.nick, 'provider': user.provider, 'password': user.password };
                 // 포스트 데이터 비동기적으로 가져오기
                 const posts = yield post_1.default.findAll({
                     attributes: ['content', 'makeContent'],

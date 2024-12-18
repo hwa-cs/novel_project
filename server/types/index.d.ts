@@ -28,6 +28,7 @@ declare global {
       email: string;
       nick: string;
       provider: string;
+      password: string;
       accessToken: string;
       snsId?: string; // snsId가 없는 경우도 처리할 수 있도록 옵셔널로 추가
     }
