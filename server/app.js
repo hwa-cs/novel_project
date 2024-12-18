@@ -28,7 +28,7 @@ const app = (0, express_1.default)();
 (0, passport_2.default)();
 // CORS 설정 (배포 환경에서 클라이언트 도메인 명시)
 app.use((0, cors_1.default)({
-    origin: process.env.NODE_ENV === 'production' ? 'https://your-client-domain.com' : true,
+    origin: process.env.NODE_ENV === 'production' ? 'https://d3w156fo7jhtwu.cloudfront.net' : true,
     credentials: true,
 }));
 app.use((0, cookie_parser_1.default)(process.env.COOKIE_SECRET));
@@ -62,15 +62,6 @@ app.use((req, res, next) => {
     });
     next();
 });
-// HTTP -> HTTPS 리디렉션 미들웨어 (프로덕션 환경 전용)
-if (process.env.NODE_ENV === 'production') {
-    app.use((req, res, next) => {
-        if (!req.secure) {
-            return res.redirect(301, `https://${req.headers.host}${req.url}`);
-        }
-        next();
-    });
-}
 // 라우터 설정
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
@@ -128,6 +119,12 @@ const options = {
 https_1.default.createServer(options, app).listen(443, () => {
     console.log('HTTPS 서버가 443 포트에서 실행 중');
 });
-http_1.default.createServer(app).listen(80, () => {
+http_1.default.createServer((req, res) => {
+    const host = req.headers.host;
+    const url = req.url;
+    // HTTP -> HTTPS 리디렉션
+    res.writeHead(301, { Location: `https://${host}${url}` });
+    res.end();
+}).listen(80, () => {
     console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
 });
