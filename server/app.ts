@@ -15,7 +15,7 @@ import fs from 'fs';
 import https from 'https';
 import http from 'http'; // http 모듈 추가
 import redis from 'redis';
-import RedisStore from 'connect-redis';
+import RedisStore from 'connect-redis'; // 7.x.x로 수정
 
 import passport from 'passport';
 import authRouter from './routes/auth';
@@ -26,7 +26,6 @@ dotenv.config(); // process.
 const redisClient = redis.createClient({
   url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
   password: process.env.REDIS_PASSWORD || '', // 비밀번호 설정 (필요한 경우)
-  legacyMode: true, // Redis 클라이언트의 legacy mode 설정
 });
 redisClient.connect().catch((err) => console.error('Redis 연결 실패:', err));
 
@@ -49,7 +48,9 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // express-session 미들웨어 설정
 const sessionOption: session.SessionOptions = {
-    store: new RedisStore({ client: redisClient }),
+    store: new RedisStore({
+        client: redisClient, // Redis 클라이언트를 전달
+    }),
     resave: false,
     saveUninitialized: false,
     secret: process.env.COOKIE_SECRET!,

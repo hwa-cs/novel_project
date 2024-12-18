@@ -19,7 +19,7 @@ const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
 const http_1 = __importDefault(require("http")); // http 모듈 추가
 const redis_1 = __importDefault(require("redis"));
-const connect_redis_1 = __importDefault(require("connect-redis"));
+const connect_redis_1 = __importDefault(require("connect-redis")); // 7.x.x로 수정
 const passport_1 = __importDefault(require("passport"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const passport_2 = __importDefault(require("./passport"));
@@ -27,7 +27,6 @@ dotenv_1.default.config(); // process.
 const redisClient = redis_1.default.createClient({
     url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
     password: process.env.REDIS_PASSWORD || '', // 비밀번호 설정 (필요한 경우)
-    legacyMode: true, // Redis 클라이언트의 legacy mode 설정
 });
 redisClient.connect().catch((err) => console.error('Redis 연결 실패:', err));
 const page_1 = __importDefault(require("./routes/page"));
@@ -44,7 +43,9 @@ app.use((0, cors_1.default)({ origin: true, credentials: true }));
 app.use((0, cookie_parser_1.default)(process.env.COOKIE_SECRET));
 // express-session 미들웨어 설정
 const sessionOption = {
-    store: new connect_redis_1.default({ client: redisClient }),
+    store: new connect_redis_1.default({
+        client: redisClient, // Redis 클라이언트를 전달
+    }),
     resave: false,
     saveUninitialized: false,
     secret: process.env.COOKIE_SECRET,
