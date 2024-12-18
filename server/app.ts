@@ -14,7 +14,7 @@ import cors from 'cors';
 import fs from 'fs';
 import https from 'https';
 import http from 'http'; // http 모듈 추가
-import redis from 'redis';
+import Redis from 'ioredis'; // ioredis 모듈 임포트
 import RedisStore from 'connect-redis'; // 7.x.x로 수정
 
 import passport from 'passport';
@@ -23,11 +23,11 @@ import passportConfig from './passport';
 
 dotenv.config(); // process.
 
-const redisClient = redis.createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+const redisClient = new Redis({
+  host: process.env.REDIS_HOST,
+  port: Number(process.env.REDIS_PORT),
   password: process.env.REDIS_PASSWORD || '', // 비밀번호 설정 (필요한 경우)
 });
-redisClient.connect().catch((err) => console.error('Redis 연결 실패:', err));
 
 import pageRouter from './routes/page';
 import postRouter from './routes/post';

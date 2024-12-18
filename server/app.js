@@ -18,17 +18,17 @@ const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
 const http_1 = __importDefault(require("http")); // http 모듈 추가
-const redis_1 = __importDefault(require("redis"));
+const ioredis_1 = __importDefault(require("ioredis")); // ioredis 모듈 임포트
 const connect_redis_1 = __importDefault(require("connect-redis")); // 7.x.x로 수정
 const passport_1 = __importDefault(require("passport"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const passport_2 = __importDefault(require("./passport"));
 dotenv_1.default.config(); // process.
-const redisClient = redis_1.default.createClient({
-    url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+const redisClient = new ioredis_1.default({
+    host: process.env.REDIS_HOST,
+    port: Number(process.env.REDIS_PORT),
     password: process.env.REDIS_PASSWORD || '', // 비밀번호 설정 (필요한 경우)
 });
-redisClient.connect().catch((err) => console.error('Redis 연결 실패:', err));
 const page_1 = __importDefault(require("./routes/page"));
 const post_1 = __importDefault(require("./routes/post"));
 const app = (0, express_1.default)();
