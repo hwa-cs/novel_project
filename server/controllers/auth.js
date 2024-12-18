@@ -65,6 +65,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
                 console.error(loginError);
                 return res.status(500).json({ error: '로그인 과정에서 오류가 발생했습니다.' });
             }
+            console.log('세션데이터: ', req.session);
             try {
                 // 사용자 정보 추출
                 const data = { 'id': user.id, 'email': user.email, 'nick': user.nick, 'provider': user.provider, 'password': user.password };
