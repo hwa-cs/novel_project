@@ -17,7 +17,6 @@ const user_1 = __importDefault(require("./routes/user"));
 const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
-const http_1 = __importDefault(require("http"));
 const passport_1 = __importDefault(require("passport"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const passport_2 = __importDefault(require("./passport"));
@@ -111,14 +110,15 @@ const errorHandler = (err, req, res, next) => {
 app.use(errorHandler);
 // HTTP -> HTTPS 리디렉션
 if (process.env.NODE_ENV === 'production') {
-    http_1.default.createServer((req, res) => {
-        const host = req.headers.host;
-        const url = req.url;
-        // HTTP -> HTTPS 리디렉션
-        res.writeHead(301, { Location: `https://${host}${url}` });
-        res.end();
-    }).listen(80, () => {
-        console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
+    app.enable('trust proxy'); // 프록시 신뢰 활성화
+    app.use((req, res, next) => {
+        // CloudFront 또는 프록시가 전달한 프로토콜 확인
+        const isHttps = req.headers['x-forwarded-proto'] === 'https';
+        if (!isHttps) {
+            // HTTPS가 아닌 경우 리디렉션
+            return res.redirect(`https://${req.headers.host}${req.url}`);
+        }
+        next();
     });
 }
 // HTTPS 서버 실행
