@@ -107,7 +107,7 @@ sequelize.sync({ force: false })
   });
 
 app.use((req, res, next) => {
-  const error = new Error(${req.method} ${req.url} 라우터가 없습니다.);
+  const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
   error.status = 404;
   next(error);
 });
@@ -121,12 +121,17 @@ const errorHandler: ErrorRequestHandler = (err, req: Request, res: Response, nex
 
 app.use(errorHandler);
 
-// HTTP에서 HTTPS로 리디렉션 (HTTP 요청을 HTTPS로 리디렉션)
-http.createServer((req, res) => {
-  res.redirect(301, https://${req.headers.host}${req.url});
+// HTTP에서 HTTPS로 리디렉션 (리디렉션을 하기 위해 Response 타입을 명시적으로 지정)
+http.createServer((req: any, res: any) => { // any 타입으로 변경
+  // req와 res를 Express 타입으로 처리
+  const expressReq = req as Request;
+  const expressRes = res as Response;
+
+  expressRes.redirect(301, `https://${expressReq.headers.host}${expressReq.url}`);
 }).listen(80, () => {
   console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
 });
+
 
 // HTTPS 서버로 443 포트에서 서비스
 https.createServer(options, app).listen(443, () => {
