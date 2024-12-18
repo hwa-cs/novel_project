@@ -14,7 +14,7 @@ import cors from 'cors';
 import fs from 'fs';
 import https from 'https';
 import http from 'http';  // http 모듈 추가
-import redis from 'redis';
+import { createClient } from 'redis';
 import { RedisStore } from 'connect-redis';
 
 import passport from 'passport';
@@ -22,12 +22,11 @@ import authRouter from './routes/auth';
 import passportConfig from './passport';
 
 dotenv.config(); // process.
-const redisClient = redis.createClient({
+const redisClient = createClient({
   url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
   password: process.env.REDIS_PASSWORD,
-  legacyMode: true,
+});
 
-})
 redisClient.connect().catch(console.error)
 import pageRouter from './routes/page';
 import postRouter from './routes/post';

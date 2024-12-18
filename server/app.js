@@ -18,16 +18,15 @@ const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
 const http_1 = __importDefault(require("http")); // http 모듈 추가
-const redis_1 = __importDefault(require("redis"));
+const redis_1 = require("redis");
 const connect_redis_1 = require("connect-redis");
 const passport_1 = __importDefault(require("passport"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const passport_2 = __importDefault(require("./passport"));
 dotenv_1.default.config(); // process.
-const redisClient = redis_1.default.createClient({
+const redisClient = (0, redis_1.createClient)({
     url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
     password: process.env.REDIS_PASSWORD,
-    legacyMode: true,
 });
 redisClient.connect().catch(console.error);
 const page_1 = __importDefault(require("./routes/page"));
