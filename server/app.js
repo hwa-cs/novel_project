@@ -27,7 +27,10 @@ const redisClient = (0, redis_1.createClient)({
     url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
     password: process.env.REDIS_PASSWORD,
 });
-redisClient.connect().catch(console.error);
+redisClient.connect().catch((err) => {
+    console.error('Redis 연결 실패:', err);
+    process.exit(1);
+});
 const page_1 = __importDefault(require("./routes/page"));
 const post_1 = __importDefault(require("./routes/post"));
 const app = (0, express_1.default)();
@@ -49,14 +52,10 @@ const sessionOption = {
     secret: process.env.COOKIE_SECRET,
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // 프로덕션 환경에서는 secure 설정
+        secure: process.env.NODE_ENV === 'production', // HTTPS에서만 secure 설정
     },
     store: new connect_redis_1.RedisStore({ client: redisClient }), // Redis로 session 저장
 };
-if (process.env.NODE_ENV === 'production') {
-    sessionOption.proxy = true;
-    sessionOption.cookie.secure = true;
-}
 app.use((0, express_session_1.default)(sessionOption));
 // passport 초기화와 세션 설정
 app.use(passport_1.default.initialize());
@@ -114,6 +113,7 @@ const errorHandler = (err, req, res, next) => {
     res.render('error');
 };
 app.use(errorHandler);
+// HTTPS 서버로 리디렉션 처리
 app.use((req, res, next) => {
     if (req.protocol !== 'https') {
         return res.redirect(301, `https://${req.headers.host}${req.url}`);
