@@ -52,6 +52,7 @@ const sessionOption: session.SessionOptions = {
 };
 if (process.env.NODE_ENV === 'production') {
   sessionOption.proxy = true;
+  sessionOption.cookie!.secure = true
 }
 
 app.use(session(sessionOption));
