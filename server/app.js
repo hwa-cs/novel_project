@@ -17,20 +17,11 @@ const user_1 = __importDefault(require("./routes/user"));
 const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
-const redis_1 = require("redis");
-const connect_redis_1 = require("connect-redis");
+const http_1 = __importDefault(require("http")); // http 모듈 추가
 const passport_1 = __importDefault(require("passport"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const passport_2 = __importDefault(require("./passport"));
 dotenv_1.default.config(); // process.
-const redisClient = (0, redis_1.createClient)({
-    url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-    password: process.env.REDIS_PASSWORD,
-});
-redisClient.connect().catch((err) => {
-    console.error('Redis 연결 실패:', err);
-    process.exit(1);
-});
 const page_1 = __importDefault(require("./routes/page"));
 const post_1 = __importDefault(require("./routes/post"));
 const app = (0, express_1.default)();
@@ -52,12 +43,14 @@ const sessionOption = {
     secret: process.env.COOKIE_SECRET,
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // HTTPS에서만 secure 설정
+        secure: process.env.NODE_ENV === 'production', // 프로덕션 환경에서는 secure 설정
     },
-    store: new connect_redis_1.RedisStore({ client: redisClient }), // Redis로 session 저장
 };
+if (process.env.NODE_ENV === 'production') {
+    sessionOption.proxy = true;
+}
 app.use((0, express_session_1.default)(sessionOption));
-// passport 초기화와 세션 설정
+// passport 초기화와 세션 설정 
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 app.use(express_1.default.json()); // JSON 형식의 요청 본문을 파싱
@@ -74,12 +67,12 @@ if (process.env.NODE_ENV === 'production') {
         contentSecurityPolicy: false,
         crossOriginEmbedderPolicy: false,
         crossOriginResourcePolicy: false,
-        crossOriginOpenerPolicy: { policy: 'unsafe-none' },
+        crossOriginOpenerPolicy: { policy: 'unsafe-none' }
     }));
     app.use((0, morgan_1.default)('combined'));
 }
 else {
-    app.use((0, morgan_1.default)('dev')); // 개발 모드로 설정
+    app.use((0, morgan_1.default)('dev')); // 개발 모드로 설정 
 }
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public'))); // 보안상 다른 폴더는 접근 불가능하지만 public폴더는 허용
 app.use(express_1.default.static(path_1.default.join(__dirname, '../client/novel_client/dist')));
@@ -92,8 +85,7 @@ nunjucks_1.default.configure('views', {
     express: app,
     watch: true,
 });
-models_1.sequelize
-    .sync({ force: false })
+models_1.sequelize.sync({ force: false })
     .then(() => {
     console.log('데이터베이스 연결 성공');
 })
@@ -113,12 +105,14 @@ const errorHandler = (err, req, res, next) => {
     res.render('error');
 };
 app.use(errorHandler);
-// HTTPS 서버로 리디렉션 처리
-app.use((req, res, next) => {
-    if (req.protocol !== 'https') {
-        return res.redirect(301, `https://${req.headers.host}${req.url}`);
-    }
-    next();
+// HTTP에서 HTTPS로 리디렉션 (리디렉션을 하기 위해 Response 타입을 명시적으로 지정)
+http_1.default.createServer((req, res) => {
+    // req와 res를 Express 타입으로 처리
+    const expressReq = req;
+    const expressRes = res;
+    expressRes.redirect(301, `https://${expressReq.headers.host}${expressReq.url}`);
+}).listen(80, () => {
+    console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
 });
 // HTTPS 서버로 443 포트에서 서비스
 https_1.default.createServer(options, app).listen(443, () => {
