@@ -58,10 +58,12 @@ const sessionOption: session.SessionOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // 프로덕션 환경에서는 secure 설정
         maxAge: 1000 * 60 * 60 * 24, // 세션 만료 시간
+        sameSite: 'none', // CORS 허용
     },
 };
 if (process.env.NODE_ENV === 'production') {
     sessionOption.proxy = true;
+    sessionOption.cookie!.secure =true;
 }
 
 app.use(session(sessionOption));
