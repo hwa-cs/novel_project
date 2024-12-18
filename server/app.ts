@@ -13,13 +13,21 @@ import { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import fs from 'fs';
 import https from 'https';
+import redis from 'redis';
+import { RedisStore } from 'connect-redis';
 
 import passport from 'passport';
 import authRouter from './routes/auth';
 import passportConfig from './passport';
 
 dotenv.config(); // process.
+const redisClient = redis.createClient({
+  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+  password: process.env.REDIS_PASSWORD,
+  legacyMode: true,
 
+})
+redisClient.connect().catch(console.error)
 import pageRouter from './routes/page';
 import postRouter from './routes/post';
 
@@ -48,6 +56,7 @@ const sessionOption: session.SessionOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // 프로덕션 환경에서는 secure 설정
     },
+    store: new RedisStore({ client: redisClient }), // Redis로 session 저장
 };
 if (process.env.NODE_ENV === 'production') {
     sessionOption.proxy = true;

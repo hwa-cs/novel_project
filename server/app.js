@@ -17,10 +17,18 @@ const user_1 = __importDefault(require("./routes/user"));
 const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
+const redis_1 = __importDefault(require("redis"));
+const connect_redis_1 = require("connect-redis");
 const passport_1 = __importDefault(require("passport"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const passport_2 = __importDefault(require("./passport"));
 dotenv_1.default.config(); // process.
+const redisClient = redis_1.default.createClient({
+    url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+    password: process.env.REDIS_PASSWORD,
+    legacyMode: true,
+});
+redisClient.connect().catch(console.error);
 const page_1 = __importDefault(require("./routes/page"));
 const post_1 = __importDefault(require("./routes/post"));
 const app = (0, express_1.default)();
@@ -44,6 +52,7 @@ const sessionOption = {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // 프로덕션 환경에서는 secure 설정
     },
+    store: new connect_redis_1.RedisStore({ client: redisClient }), // Redis로 session 저장
 };
 if (process.env.NODE_ENV === 'production') {
     sessionOption.proxy = true;
