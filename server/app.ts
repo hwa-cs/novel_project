@@ -13,13 +13,13 @@ import { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import fs from 'fs';
 import https from 'https';
-import http from 'http';
+import http from 'http'; // http 모듈 추가
 
 import passport from 'passport';
 import authRouter from './routes/auth';
 import passportConfig from './passport';
 
-dotenv.config();
+dotenv.config(); // process.
 
 import pageRouter from './routes/page';
 import postRouter from './routes/post';
@@ -28,121 +28,126 @@ const app = express();
 
 // SSL 인증서와 키 파일 경로 설정
 const options = {
-  cert: fs.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.crt'),
-  key: fs.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.key'),
+    cert: fs.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.crt'),
+    key: fs.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.key'),
 };
-
 passportConfig();
 
-// CORS 설정
+// 모든 도메인에서의 요청 허용
 app.use(cors({ origin: true, credentials: true }));
+// 특정 도메인만 허용
+// app.use(cors({ origin: 'http://localhost:5173' }));
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // express-session 미들웨어 설정
 const sessionOption: session.SessionOptions = {
-  resave: false,
-  saveUninitialized: false,
-  secret: process.env.COOKIE_SECRET!,
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // 프로덕션 환경에서는 secure 설정
-  },
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.COOKIE_SECRET!,
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // 프로덕션 환경에서는 secure 설정
+    },
 };
 if (process.env.NODE_ENV === 'production') {
-  sessionOption.proxy = true;
-  sessionOption.cookie!.secure = true;
+    sessionOption.proxy = true;
+    sessionOption.cookie!.secure = true;
 }
 
 app.use(session(sessionOption));
 
-// Passport 초기화와 세션 설정
+// passport 초기화와 세션 설정
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json()); // JSON 형식의 요청 본문을 파싱
 app.use(express.urlencoded({ extended: false })); // URL 인코딩된 요청 본문을 파싱
 
-// 라우터 설정
 app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter);
-app.use('/api/post', postRouter);
 app.set('port', process.env.PORT || 8001);
 app.set('view engine', 'html');
-app.use('/api', pageRouter);
+app.use('/api/post', postRouter);
 
 if (process.env.NODE_ENV === 'production') {
-  app.enable('trust proxy'); // Proxy 서버 신뢰 설정
-  app.use(hpp());
-  app.use(
-    helmet({
-      contentSecurityPolicy: false,
-      crossOriginEmbedderPolicy: false,
-      crossOriginResourcePolicy: false,
-      crossOriginOpenerPolicy: { policy: 'unsafe-none' },
-    })
-  );
-  app.use(morgan('combined'));
+    app.enable('trust proxy');
+    app.use(hpp());
+    app.use(
+        helmet({
+            contentSecurityPolicy: false,
+            crossOriginEmbedderPolicy: false,
+            crossOriginResourcePolicy: false,
+            crossOriginOpenerPolicy: { policy: 'unsafe-none' },
+        })
+    );
+    app.use(morgan('combined'));
 } else {
-  app.use(morgan('dev')); // 개발 모드 로그 설정
+    app.use(morgan('dev')); // 개발 모드로 설정
 }
 
-app.use(express.static(path.join(__dirname, 'public'))); // Static 파일 경로
+app.use(express.static(path.join(__dirname, 'public'))); // 보안상 다른 폴더는 접근 불가능하지만 public폴더는 허용
 app.use(express.static(path.join(__dirname, '../client/novel_client/dist')));
 
-// 모든 경로에 대해 React의 index.html 반환
+// 2. 모든 경로에 대해 React의 index.html 파일을 반환하는 라우트 설정
 app.get('*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../client/novel_client/dist', 'index.html'));
+    res.sendFile(
+        path.join(__dirname, '../client/novel_client/dist', 'index.html')
+    );
 });
+
+app.use('/api', pageRouter);
 
 nunjucks.configure('views', {
-  express: app,
-  watch: true,
+    express: app,
+    watch: true,
 });
 
-// Sequelize 연결
 sequelize
-  .sync({ force: false })
-  .then(() => {
-    console.log('데이터베이스 연결 성공');
-  })
-  .catch((err) => {
-    console.error('데이터베이스 연결 실패', err);
-    process.exit(1);
-  });
+    .sync({ force: false })
+    .then(() => {
+        console.log('데이터베이스 연결 성공');
+    })
+    .catch((err) => {
+        console.error('데이터베이스 연결 실패', err);
+        process.exit(1); // 또는 적절한 에러 응답을 클라이언트에 전달
+    });
 
-// 404 처리 미들웨어
 app.use((req, res, next) => {
-  const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
-  (error as any).status = 404;
-  next(error);
+    const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
+    error.status = 404;
+    next(error);
 });
 
-// 에러 핸들러 미들웨어
-const errorHandler: ErrorRequestHandler = (err, req: Request, res: Response, next: NextFunction) => {
-  res.locals.message = err.message;
-  res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
-  res.status((err as any).status || 500);
-  res.render('error');
+const errorHandler: ErrorRequestHandler = (
+    err,
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    res.locals.message = err.message;
+    res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
+    res.status(err.status || 500);
+    res.render('error');
 };
 
 app.use(errorHandler);
 
-// HTTP -> HTTPS 리디렉션
-if (process.env.NODE_ENV === 'production') {
-  app.enable('trust proxy'); // 프록시 신뢰 활성화
+// HTTP에서 HTTPS로 리디렉션 (리디렉션을 하기 위해 Response 타입을 명시적으로 지정)
+http.createServer((req: any, res: any) => {
+    // any 타입으로 변경
+    // req와 res를 Express 타입으로 처리
+    const expressReq = req as Request;
+    const expressRes = res as Response;
 
-  app.use((req, res, next) => {
-    // CloudFront 또는 프록시가 전달한 프로토콜 확인
-    const isHttps = req.headers['x-forwarded-proto'] === 'https';
-    if (!isHttps) {
-      // HTTPS가 아닌 경우 리디렉션
-      return res.redirect(`https://${req.headers.host}${req.url}`);
-    }
-    next();
-  });
-}
+    expressRes.redirect(
+        301,
+        `https://${expressReq.headers.host}${expressReq.url}`
+    );
+}).listen(80, () => {
+    console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
+});
 
-// HTTPS 서버 실행
+// HTTPS 서버로 443 포트에서 서비스
 https.createServer(options, app).listen(443, () => {
-  console.log('HTTPS 서버가 443 포트에서 실행 중');
+    console.log('HTTPS 서버가 443 포트에서 실행 중');
 });
