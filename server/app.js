@@ -18,10 +18,18 @@ const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
 const http_1 = __importDefault(require("http")); // http 모듈 추가
+const redis_1 = __importDefault(require("redis"));
+const connect_redis_1 = __importDefault(require("connect-redis"));
 const passport_1 = __importDefault(require("passport"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const passport_2 = __importDefault(require("./passport"));
 dotenv_1.default.config(); // process.
+const redisClient = redis_1.default.createClient({
+    url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+    password: process.env.REDIS_PASSWORD || '', // 비밀번호 설정 (필요한 경우)
+    legacyMode: true, // Redis 클라이언트의 legacy mode 설정
+});
+redisClient.connect().catch((err) => console.error('Redis 연결 실패:', err));
 const page_1 = __importDefault(require("./routes/page"));
 const post_1 = __importDefault(require("./routes/post"));
 const app = (0, express_1.default)();
@@ -36,6 +44,7 @@ app.use((0, cors_1.default)({ origin: true, credentials: true }));
 app.use((0, cookie_parser_1.default)(process.env.COOKIE_SECRET));
 // express-session 미들웨어 설정
 const sessionOption = {
+    store: new connect_redis_1.default({ client: redisClient }),
     resave: false,
     saveUninitialized: false,
     secret: process.env.COOKIE_SECRET,
@@ -48,7 +57,7 @@ if (process.env.NODE_ENV === 'production') {
     sessionOption.proxy = true;
 }
 app.use((0, express_session_1.default)(sessionOption));
-// passport 초기화와 세션 설정 
+// passport 초기화와 세션 설정
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 app.use(express_1.default.json()); // JSON 형식의 요청 본문을 파싱
@@ -65,12 +74,12 @@ if (process.env.NODE_ENV === 'production') {
         contentSecurityPolicy: false,
         crossOriginEmbedderPolicy: false,
         crossOriginResourcePolicy: false,
-        crossOriginOpenerPolicy: { policy: 'unsafe-none' }
+        crossOriginOpenerPolicy: { policy: 'unsafe-none' },
     }));
     app.use((0, morgan_1.default)('combined'));
 }
 else {
-    app.use((0, morgan_1.default)('dev')); // 개발 모드로 설정 
+    app.use((0, morgan_1.default)('dev')); // 개발 모드로 설정
 }
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public'))); // 보안상 다른 폴더는 접근 불가능하지만 public폴더는 허용
 app.use(express_1.default.static(path_1.default.join(__dirname, '../client/novel_client/dist')));
@@ -83,7 +92,8 @@ nunjucks_1.default.configure('views', {
     express: app,
     watch: true,
 });
-models_1.sequelize.sync({ force: false })
+models_1.sequelize
+    .sync({ force: false })
     .then(() => {
     console.log('데이터베이스 연결 성공');
 })
