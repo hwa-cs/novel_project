@@ -17,7 +17,6 @@ const user_1 = __importDefault(require("./routes/user"));
 const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
-const http_1 = __importDefault(require("http")); // http 모듈 추가
 const passport_1 = __importDefault(require("passport"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const passport_2 = __importDefault(require("./passport"));
@@ -108,14 +107,11 @@ const errorHandler = (err, req, res, next) => {
 };
 app.use(errorHandler);
 // HTTP에서 HTTPS로 리디렉션 (리디렉션을 하기 위해 Response 타입을 명시적으로 지정)
-http_1.default.createServer((req, res) => {
-    // any 타입으로 변경
-    // req와 res를 Express 타입으로 처리
-    const expressReq = req;
-    const expressRes = res;
-    expressRes.redirect(301, `https://${expressReq.headers.host}${expressReq.url}`);
-}).listen(80, () => {
-    console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
+app.use((req, res, next) => {
+    if (req.protocol === 'http') {
+        return res.redirect(301, `https://${req.headers.host}${req.url}`);
+    }
+    next();
 });
 // HTTPS 서버로 443 포트에서 서비스
 https_1.default.createServer(options, app).listen(443, () => {
