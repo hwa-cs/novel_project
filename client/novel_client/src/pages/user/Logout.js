@@ -29,13 +29,13 @@ export const logoutFromNaver = async (accessToken) => {
         throw new Error(error.response?.data || error.message);
     }
 };
-export const logoutDefault = async (email, password) => {
+export const logoutDefault = async (email) => {
     try {
         await getNovelApi({
             method: 'GET',
             withCredentials: true,
             url: '/api/auth/logout',
-            data: { email, password },
+            data: { email },
         });
         console.log('일반 로그아웃 성공');
     }
@@ -59,10 +59,10 @@ export const handleLogout = async (sessionData, toggleLogin) => {
             await logoutFromNaver(sessionData.accessToken);
         }
         else {
-            if (!sessionData.email || !sessionData.password) {
-                throw new Error('이메일 또는 비밀번호가 없습니다.');
+            if (!sessionData.email) {
+                throw new Error('이메일');
             }
-            await logoutDefault(sessionData.email, sessionData.password);
+            await logoutDefault(sessionData.email);
         }
         sessionStorage.clear();
         toggleLogin(); // 로그인 상태를 false로 변경

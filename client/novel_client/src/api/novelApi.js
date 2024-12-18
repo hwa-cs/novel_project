@@ -2,7 +2,7 @@ import axios from 'axios';
 export const getNovelApi = (config) => {
     // AxiosRequestConfig에는 baseURL, headers, params, data
     return axios({
-        baseURL: 'http://3.39.222.228', // 백엔드 서버 주소
+        baseURL: 'https:///d3w156fo7jhtwu.cloudfront.net', // 백엔드 서버 주소
         ...config, // 호출 시 전달된 config를 여기에 병합
     });
 };

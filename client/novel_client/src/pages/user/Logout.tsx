@@ -30,13 +30,13 @@ export const logoutFromNaver = async (accessToken: string): Promise<void> => {
     }
 };
 
-export const logoutDefault = async (email: string, password: string): Promise<void> => {
+export const logoutDefault = async (email: string): Promise<void> => {
     try {
         await getNovelApi({
             method: 'GET',
             withCredentials: true,
             url: '/api/auth/logout',
-            data: { email, password },
+            data: { email},
         });
         console.log('일반 로그아웃 성공');
     } catch (error: any) {
@@ -66,10 +66,10 @@ export const handleLogout = async (
             if (!sessionData.accessToken) throw new Error('네이버 액세스 토큰이 없습니다.');
             await logoutFromNaver(sessionData.accessToken);
         } else {
-            if (!sessionData.email || !sessionData.password) {
-                throw new Error('이메일 또는 비밀번호가 없습니다.');
+            if (!sessionData.email) {
+                throw new Error('이메일');
             }
-            await logoutDefault(sessionData.email, sessionData.password);
+            await logoutDefault(sessionData.email);
         }
 
         sessionStorage.clear();
