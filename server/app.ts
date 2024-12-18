@@ -13,6 +13,7 @@ import { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import fs from 'fs';
 import https from 'https';
+import http from 'http';  // http 모듈 추가
 import redis from 'redis';
 import { RedisStore } from 'connect-redis';
 
@@ -141,14 +142,18 @@ const errorHandler: ErrorRequestHandler = (
 app.use(errorHandler);
 
 // HTTP에서 HTTPS로 리디렉션 (리디렉션을 하기 위해 Response 타입을 명시적으로 지정)
-app.use((req: Request, res: Response, next: NextFunction) => {
-    if (req.protocol === 'http') {
-        return res.redirect(301, `https://${req.headers.host}${req.url}`);
-    }
-    next();
+http.createServer((req: any, res: any) => { // any 타입으로 변경
+  // req와 res를 Express 타입으로 처리
+  const expressReq = req as Request;
+  const expressRes = res as Response;
+
+  expressRes.redirect(301, `https://${expressReq.headers.host}${expressReq.url}`);
+}).listen(80, () => {
+  console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
 });
+
 
 // HTTPS 서버로 443 포트에서 서비스
 https.createServer(options, app).listen(443, () => {
-    console.log('HTTPS 서버가 443 포트에서 실행 중');
+  console.log('HTTPS 서버가 443 포트에서 실행 중');
 });
