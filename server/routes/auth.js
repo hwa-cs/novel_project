@@ -32,7 +32,7 @@ router.get('/kakao/callback', passport_1.default.authenticate('kakao', { failure
         return; // Promise<void>를 보장
     }
     // 클라이언트로 리다이렉트 
-    res.redirect(`http://3.39.222.228/callback?nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.id}&accessToken=${user.accessToken}`);
+    res.redirect(`https:///d3w156fo7jhtwu.cloudfront.net/callback?nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.id}&accessToken=${user.accessToken}`);
     return; // 명시적으로 void 반환
 }));
 router.get('/naver/callback', passport_1.default.authenticate('naver', { failureRedirect: '/?error=네이버 로그인 실패' }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -43,7 +43,7 @@ router.get('/naver/callback', passport_1.default.authenticate('naver', { failure
         return; // Promise<void>를 보장
     }
     // 클라이언트로 리다이렉트 
-    res.redirect(`http://3.39.222.228/callback?nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.id}&accessToken=${user.accessToken}`);
+    res.redirect(`https:///d3w156fo7jhtwu.cloudfront.net/callback?nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.id}&accessToken=${user.accessToken}`);
     return; // 명시적으로 void 반환
 }));
 // 핸들러 타입을 명시적으로 지정

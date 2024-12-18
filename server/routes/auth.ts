@@ -25,7 +25,7 @@ router.get('/kakao/callback', passport.authenticate('kakao', { failureRedirect: 
   }
 
   // 클라이언트로 리다이렉트 
-  res.redirect(`http://3.39.222.228/callback?nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.id}&accessToken=${user.accessToken}`);
+  res.redirect(`https:///d3w156fo7jhtwu.cloudfront.net/callback?nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.id}&accessToken=${user.accessToken}`);
   return; // 명시적으로 void 반환
 });
 
@@ -40,7 +40,7 @@ router.get('/naver/callback', passport.authenticate('naver', { failureRedirect: 
   }
 
   // 클라이언트로 리다이렉트 
-  res.redirect(`http://3.39.222.228/callback?nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.id}&accessToken=${user.accessToken}`);
+  res.redirect(`https:///d3w156fo7jhtwu.cloudfront.net/callback?nickname=${user.nick}&email=${user.email}&provider=${user.provider}&id=${user.id}&accessToken=${user.accessToken}`);
   return; // 명시적으로 void 반환
 });
 
