@@ -17,13 +17,16 @@ const user_1 = __importDefault(require("./routes/user"));
 const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
-const http_1 = __importDefault(require("http")); // http 모듈 추가
 const ioredis_1 = __importDefault(require("ioredis")); // ioredis 모듈 임포트
 const connect_redis_1 = __importDefault(require("connect-redis")); // 7.x.x로 수정
 const passport_1 = __importDefault(require("passport"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const passport_2 = __importDefault(require("./passport"));
 dotenv_1.default.config(); // process.
+const options = {
+    cert: fs_1.default.readFileSync('/etc/letsencrypt/live/www.koimang.duckdns.org/fullchain.pem'),
+    key: fs_1.default.readFileSync('/etc/letsencrypt/live/www.koimang.duckdns.org/privkey.pem'),
+};
 const redisClient = new ioredis_1.default({
     host: process.env.REDIS_HOST,
     port: Number(process.env.REDIS_PORT),
@@ -33,13 +36,13 @@ const page_1 = __importDefault(require("./routes/page"));
 const post_1 = __importDefault(require("./routes/post"));
 const app = (0, express_1.default)();
 // SSL 인증서와 키 파일 경로 설정
-const options = {
-    cert: fs_1.default.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.crt'),
-    key: fs_1.default.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.key'),
-};
+// const options = {
+//     cert: fs.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.crt'),
+//     key: fs.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.key'),
+// };
 (0, passport_2.default)();
 // 모든 도메인에서의 요청 허용
-app.use((0, cors_1.default)({ origin: true, credentials: true }));
+app.use((0, cors_1.default)({ origin: 'https://www.koimang.duckdns.org', credentials: true }));
 app.use((0, cookie_parser_1.default)(process.env.COOKIE_SECRET));
 // express-session 미들웨어 설정
 const sessionOption = {
@@ -50,8 +53,9 @@ const sessionOption = {
     saveUninitialized: false,
     secret: process.env.COOKIE_SECRET,
     cookie: {
+        domain: 'koimang.duckdns.org', // 기본 도메인 설정
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // 프로덕션 환경에서는 secure 설정
+        secure: true, // 기본 도메인은 HTTPS만 사용
         maxAge: 1000 * 60 * 60 * 24, // 세션 만료 시간
         sameSite: 'none', // CORS 허용
     },
@@ -81,9 +85,13 @@ if (process.env.NODE_ENV === 'production') {
         crossOriginOpenerPolicy: { policy: 'unsafe-none' },
     }));
     app.use((0, morgan_1.default)('combined'));
-}
-else {
-    app.use((0, morgan_1.default)('dev')); // 개발 모드로 설정
+    // HTTPS 강제 리디렉션 설정
+    app.use((req, res, next) => {
+        if (!req.secure) {
+            return res.redirect(`https://${req.headers.host}${req.url}`);
+        }
+        next();
+    });
 }
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public'))); // 보안상 다른 폴더는 접근 불가능하지만 public폴더는 허용
 app.use(express_1.default.static(path_1.default.join(__dirname, '../client/novel_client/dist')));
@@ -118,9 +126,9 @@ const errorHandler = (err, req, res, next) => {
 };
 app.use(errorHandler);
 // HTTP에서 HTTPS로 리디렉션 (이제 express가 자동으로 처리)
-http_1.default.createServer(app).listen(80, () => {
-    console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
-});
+// http.createServer(app).listen(80, () => {
+//     console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
+// });
 // HTTPS 서버로 443 포트에서 서비스
 https_1.default.createServer(options, app).listen(443, () => {
     console.log('HTTPS 서버가 443 포트에서 실행 중');

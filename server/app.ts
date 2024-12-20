@@ -23,6 +23,11 @@ import passportConfig from './passport';
 
 dotenv.config(); // process.
 
+const options = {
+    cert: fs.readFileSync('/etc/letsencrypt/live/www.koimang.duckdns.org/fullchain.pem'),
+    key: fs.readFileSync('/etc/letsencrypt/live/www.koimang.duckdns.org/privkey.pem'),
+};
+
 const redisClient = new Redis({
   host: process.env.REDIS_HOST,
   port: Number(process.env.REDIS_PORT),
@@ -35,14 +40,14 @@ import postRouter from './routes/post';
 const app = express();
 
 // SSL 인증서와 키 파일 경로 설정
-const options = {
-    cert: fs.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.crt'),
-    key: fs.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.key'),
-};
+// const options = {
+//     cert: fs.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.crt'),
+//     key: fs.readFileSync('/opt/bitnami/apache/conf/bitnami/certs/server.key'),
+// };
 passportConfig();
 
 // 모든 도메인에서의 요청 허용
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: 'https://www.koimang.duckdns.org', credentials: true }));
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
@@ -55,8 +60,9 @@ const sessionOption: session.SessionOptions = {
     saveUninitialized: false,
     secret: process.env.COOKIE_SECRET!,
     cookie: {
+        domain: 'koimang.duckdns.org', // 기본 도메인 설정
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // 프로덕션 환경에서는 secure 설정
+        secure: true, // 기본 도메인은 HTTPS만 사용
         maxAge: 1000 * 60 * 60 * 24, // 세션 만료 시간
         sameSite: 'none', // CORS 허용
     },
@@ -92,9 +98,16 @@ if (process.env.NODE_ENV === 'production') {
         })
     );
     app.use(morgan('combined'));
-} else {
-    app.use(morgan('dev')); // 개발 모드로 설정
+
+    // HTTPS 강제 리디렉션 설정
+    app.use((req, res, next) => {
+        if (!req.secure) {
+            return res.redirect(`https://${req.headers.host}${req.url}`);
+        }
+        next();
+    });
 }
+
 
 app.use(express.static(path.join(__dirname, 'public'))); // 보안상 다른 폴더는 접근 불가능하지만 public폴더는 허용
 app.use(express.static(path.join(__dirname, '../client/novel_client/dist')));
@@ -144,9 +157,9 @@ const errorHandler: ErrorRequestHandler = (
 app.use(errorHandler);
 
 // HTTP에서 HTTPS로 리디렉션 (이제 express가 자동으로 처리)
-http.createServer(app).listen(80, () => {
-    console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
-});
+// http.createServer(app).listen(80, () => {
+//     console.log('HTTP 서버가 80 포트에서 리디렉션 대기 중');
+// });
 
 // HTTPS 서버로 443 포트에서 서비스
 https.createServer(options, app).listen(443, () => {
