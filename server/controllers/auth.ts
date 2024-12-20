@@ -101,9 +101,10 @@ const login: RequestHandler = async (req, res, next) => {
 };
 
 const logout:RequestHandler = (req, res) => {
-  req.logout(() => {
-    res.redirect('/api');
-  });
+  req.session.destroy(() => {
+    res.clearCookie('connect.sid');
+    res.redirect('/');
+});
 };
 
 export { logout, login, join }

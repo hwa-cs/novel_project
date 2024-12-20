@@ -101,43 +101,34 @@ const naverLogoutHandler: RequestHandler = async (req: Request, res: Response): 
       return;
     }
 
-    // 네이버 액세스 토큰 검증 후 세션 로그아웃
-    try {
-      // 네이버 로그아웃 API 호출 (엔드포인트 확인 필요)
-      const response = await axios({
-        method: 'get',
-        url: 'https://openapi.naver.com/v1/nid/logout',
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-        },
+        // 세션 및 쿠키 삭제
+        req.logout((err) => {
+          if (err) {
+              console.error('로그아웃 처리 실패:', err);
+              res.status(500).json({ message: 'Failed to log out' });
+              return;
+          }
+
+          req.session.destroy((err) => {
+              if (err) {
+                  console.error('세션 삭제 실패:', err);
+                  res.status(500).json({ message: 'Failed to destroy session' });
+                  return;
+              }
+
+              res.clearCookie('connect.sid', {
+                  httpOnly: true,
+                  secure: process.env.NODE_ENV === 'production',
+                  sameSite: 'none',
+                  path: '/',
+              });
+
+              res.status(200).json({ message: 'Logout successful' });
+          });
       });
-
-      console.log('네이버 로그아웃 응답:', response.data);
-    } catch (apiError) {
-      console.warn('네이버 로그아웃 API 호출 실패:', apiError);
-      // 계속 진행
-    }
-
-    // Express의 로그아웃 처리
-    await new Promise<void>((resolve, reject) => {
-      req.logout((err) => {
-        if (err) return reject(err);
-        resolve();
-      });
-    });
-
-    // 세션 종료
-    req.session.destroy((err) => {
-      if (err) {
-        console.error('Session destruction error:', err);
-        res.status(500).json({ message: 'Failed to destroy session' });
-        return;
-      }
-      res.redirect('/api');
-    });
   } catch (error) {
-    console.error('Logout error:', error);
-    res.status(500).json({ message: 'Logout failed', error });
+      console.error('로그아웃 오류:', error);
+      res.status(500).json({ message: 'Logout failed', error });
   }
 };
 

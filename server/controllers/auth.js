@@ -105,8 +105,9 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.login = login;
 const logout = (req, res) => {
-    req.logout(() => {
-        res.redirect('/api');
+    req.session.destroy(() => {
+        res.clearCookie('connect.sid');
+        res.redirect('/');
     });
 };
 exports.logout = logout;
