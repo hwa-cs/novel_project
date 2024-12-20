@@ -5,7 +5,6 @@ import path from 'path';
 import session from 'express-session';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import nunjucks from 'nunjucks';
 import dotenv from 'dotenv';
 import { sequelize } from './models';
 import userRouter from './routes/user';
@@ -34,7 +33,7 @@ const redisClient = new Redis({
   password: process.env.REDIS_PASSWORD || '', // 비밀번호 설정 (필요한 경우)
 });
 
-import pageRouter from './routes/page';
+// import pageRouter from './routes/page';
 import postRouter from './routes/post';
 
 const app = express();
@@ -119,12 +118,7 @@ app.get('*', (req: Request, res: Response) => {
     );
 });
 
-app.use('/api', pageRouter);
-
-nunjucks.configure('views', {
-    express: app,
-    watch: true,
-});
+// app.use('/api', pageRouter);
 
 sequelize
     .sync({ force: false })
@@ -148,10 +142,7 @@ const errorHandler: ErrorRequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    res.locals.message = err.message;
-    res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
-    res.status(err.status || 500);
-    res.render('error');
+    res.status(err.status || 500).json({ error: err.message });
 };
 
 app.use(errorHandler);

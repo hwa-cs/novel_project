@@ -10,7 +10,6 @@ const path_1 = __importDefault(require("path"));
 const express_session_1 = __importDefault(require("express-session"));
 const helmet_1 = __importDefault(require("helmet"));
 const hpp_1 = __importDefault(require("hpp"));
-const nunjucks_1 = __importDefault(require("nunjucks"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const models_1 = require("./models");
 const user_1 = __importDefault(require("./routes/user"));
@@ -32,7 +31,7 @@ const redisClient = new ioredis_1.default({
     port: Number(process.env.REDIS_PORT),
     password: process.env.REDIS_PASSWORD || '', // 비밀번호 설정 (필요한 경우)
 });
-const page_1 = __importDefault(require("./routes/page"));
+// import pageRouter from './routes/page';
 const post_1 = __importDefault(require("./routes/post"));
 const app = (0, express_1.default)();
 // SSL 인증서와 키 파일 경로 설정
@@ -99,11 +98,7 @@ app.use(express_1.default.static(path_1.default.join(__dirname, '../client/novel
 app.get('*', (req, res) => {
     res.sendFile(path_1.default.join(__dirname, '../client/novel_client/dist', 'index.html'));
 });
-app.use('/api', page_1.default);
-nunjucks_1.default.configure('views', {
-    express: app,
-    watch: true,
-});
+// app.use('/api', pageRouter);
 models_1.sequelize
     .sync({ force: false })
     .then(() => {
@@ -119,10 +114,7 @@ app.use((req, res, next) => {
     next(error);
 });
 const errorHandler = (err, req, res, next) => {
-    res.locals.message = err.message;
-    res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
-    res.status(err.status || 500);
-    res.render('error');
+    res.status(err.status || 500).json({ error: err.message });
 };
 app.use(errorHandler);
 // HTTP에서 HTTPS로 리디렉션 (이제 express가 자동으로 처리)
