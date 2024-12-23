@@ -10,7 +10,8 @@ const Header = () => {
         { id: 'home', label: '홈페이지', to: '/' },
         { id: 'short', label: '단락생성', to: '/short' },
         { id: 'cover', label: '표지생성', to: '/cover' },
-        { id: 'reserve', label: '소제목생성 및 분석', to: '/reserve' },
+        { id: 'reserve', label: '소제목생성', to: '/Title' },
+        { id: 'reserve', label: '문피아 분석', to: '/Analyze' },
         { id: 'introduction', label: '팀소개', to: '/introduction' },
     ];
     const [isMenuOpen, setIsMenuOpen] = useState(false);

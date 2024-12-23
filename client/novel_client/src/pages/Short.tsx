@@ -33,8 +33,10 @@ const Short: React.FC = () => {
   const UserId = key?.id;
 
   const handleGoToPage = () => {
-    if (flipPageRef.current && userPosts && userPosts.length) {
-      flipPageRef.current.gotoPage(userPosts.length + 1);  // 원하는 페이지로 이동
+    if (flipPageRef.current) {
+      const totalPages = userPosts ? userPosts.length : 0; 
+      console.log('이동해요!');
+      flipPageRef.current.gotoPage(totalPages + 1); // 원하는 페이지로 이동
     }
   };
 
@@ -105,14 +107,28 @@ const Short: React.FC = () => {
           <div className="flex bg-white">
             {/* 페이지 왼쪽 */}
             <div className="bg-gray-100 flex-1 p-6 w-[250px] h-[600px] border-r-2 border-gray-300">
-              <h2 className="text-2xl font-semibold mb-4">사용 설명서</h2>
-              <p className="text-gray-600">알아서 쓰세요</p>
+              <h2 className="text-3xl font-bold text-gray-800 mb-6">📖 사용 설명서</h2>
+              <ol className="list-decimal list-inside text-gray-700 space-y-2">
+                <li>책자를 넘기거나, 아래의 <strong className="text-blue-600">'작성페이지'</strong>를 클릭합니다.</li>
+                <li>글을 쓰다 막힌 단락을 작성칸에 적어줍니다.</li>
+                <li>작성칸 옆에서 적합한 <strong>장르</strong>를 선택합니다.</li>
+                <li><strong className="text-blue-600">작성</strong> 버튼을 클릭합니다.</li>
+                <li>작성 페이지에서 결과물을 확인하거나,</li>
+                <li>뒤 페이지로 이동하여 과거 작성 내용을 다시 확인합니다.</li>
+              </ol>
             </div>
 
             {/* 페이지 오른쪽 */}
             <div className="bg-[#c0daaf] flex-1 p-6">
-              <h2 className="text-2xl font-semibold mb-4">코아망</h2>
-              <p className="text-gray-600">...망나니</p>
+              <h2 className="text-3xl font-bold text-gray-800 mb-6">✨ 코아망</h2>
+              <p className="text-gray-700 leading-relaxed">
+                <strong>코리아 IT의 망나니가 되었다</strong> <br />
+                단락 생성 모델을 활용한 혁신적인 서비스입니다.
+              </p>
+              <p className="text-gray-700 leading-relaxed mt-4">
+                작가들이 글을 쓰다 막히는 순간, 창작의 흐름을 이어갈 수 있도록 돕는 도구로, <br />
+                창의적인 스토리텔링을 지원합니다.
+              </p>
             </div>
           </div>
 
@@ -138,14 +154,14 @@ const Short: React.FC = () => {
             {/* 페이지 왼쪽 */}
             <div className="border-r-2 border-gray-300 flex-1 p-6 w-[250px] h-[600px]">
               <h2 className="text-2xl font-semibold mb-4">작성 페이지</h2>
-              <p className="text-gray-600">작성칸</p>
+              <p className="text-gray-600">작성한 내용</p>
               {content}
             </div>
 
             {/* 페이지 오른쪽 */}
             <div className="flex-1 p-6">
               <h2 className="text-2xl font-semibold mb-4">출력 페이지</h2>
-              <p className="text-gray-600">출력 내용</p>
+              <p className="text-gray-600">생성된 단락</p>
                 <Typewriter
                     options={{
                       strings: [`${lastPost}`],
@@ -163,14 +179,31 @@ const Short: React.FC = () => {
           <div className="flex bg-white">
             {/* 페이지 왼쪽 */}
             <div className="bg-[#c0daaf] flex-1 p-6 w-[250px] h-[600px] border-r-2 border-gray-300">
-              <h2 className="text-2xl font-semibold mb-4">마지막 페이지</h2>
-              <p className="text-gray-600">잘썼어요?</p>
+              <h2 className="text-3xl font-bold text-gray-800 mt-8 mb-6">📌 마지막 페이지</h2>
+              <p className="text-gray-700 leading-relaxed">
+                마지막 페이지에 도달하셨습니다! <br />
+                추가 단락을 생성하고 싶다면 <strong>뒤 페이지</strong>로 넘어가거나, 아래의 
+                <strong className="text-blue-600"> '작성페이지'</strong> 버튼을 클릭해주세요.
+              </p>
             </div>
 
             {/* 페이지 오른쪽 */}
             <div className="bg-gray-100 flex-1 p-6">
-              <h2 className="text-2xl font-semibold mb-4">마지막입니다</h2>
-              <p className="text-gray-600">...돌아가세요</p>
+              <h2 className="text-3xl font-bold text-gray-800 mb-6">🌟 Koimang</h2>
+              <p className="text-gray-700 leading-relaxed mb-4">
+                Koimang 서비스가 도움이 되셨나요? <br />
+                더 나은 서비스 제공을 위해 피드백을 기다립니다.
+              </p>
+              <p className="text-gray-700 leading-relaxed">
+                문제가 있거나 개선 의견이 있으시면 <br />
+                <a
+                  href="mailto:test@example.com"
+                  className="text-blue-600 underline"
+                >
+                  test@example.com
+                </a>
+                으로 언제든지 연락주세요!
+              </p>
             </div>
           </div>
         </FlipPage>
