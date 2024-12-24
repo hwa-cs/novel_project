@@ -9,7 +9,7 @@ const Footer = () => {
         
         {/* 문의 정보 */}
         <p className="text-gray-400 text-md text-center md:text-right">
-          문의: <a href="mailto:test@example.com" className="text-[#c0daaf] hover:underline">test@example.com</a>
+          문의: <a href="jadeym1222@naver.com" className="text-[#c0daaf] hover:underline">jadeym1222@naver.com</a>
         </p>
       </div>
 
@@ -28,7 +28,7 @@ const Footer = () => {
       <div className="container mx-auto px-5 mt-4 flex flex-wrap flex-col md:flex-row justify-between items-center">
         {/* 개발자 정보 */}
         <span className="text-gray-500 text-sm text-center md:text-right">
-          Developed by 문정연, 최윤범, 화철수
+          Developed by 문정현, 최윤범, 화철수
         </span>
       </div>
     </footer>

@@ -24,8 +24,8 @@ const Introduction = () => {
 
                 <h2 className="text-xl font-semibold mb-2">연락처</h2>
                 <ul className="list-none">
-                    <li><strong>깃허브:</strong> <a href="https://github.com/digitalteam" className="underline">github.com/digitalteam</a></li>
-                    <li><strong>이메일:</strong> <a href="mailto:digitalteam@example.com" className="underline">digitalteam@example.com</a></li>
+                    <li><strong>깃허브:</strong> <a href="https://github.com/hwa-cs/novel_project" className="underline">https://github.com/hwa-cs/novel_project</a></li>
+                    <li><strong>이메일:</strong> <a href="jadeym1222@naver.com" className="underline">jadeym1222@naver.com</a></li>
                 </ul>
             </div>
         </div>

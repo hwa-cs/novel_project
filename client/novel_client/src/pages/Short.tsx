@@ -197,10 +197,10 @@ const Short: React.FC = () => {
               <p className="text-gray-700 leading-relaxed">
                 문제가 있거나 개선 의견이 있으시면 <br />
                 <a
-                  href="mailto:test@example.com"
+                  href="jadeym1222@naver.com"
                   className="text-blue-600 underline"
                 >
-                  test@example.com
+                  jadeym1222@naver.com
                 </a>
                 으로 언제든지 연락주세요!
               </p>

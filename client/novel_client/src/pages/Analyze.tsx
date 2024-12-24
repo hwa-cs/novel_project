@@ -1,8 +1,79 @@
-import React from 'react';
+import { useState, ChangeEvent } from 'react';
 import BarChart from './Chart/BarChart'
+import { getModelApi } from '../api/novelApi'; // API 요청 함수
+import { FaSpinner } from 'react-icons/fa';
 const Analyze = () => {
     const cluster3D = 
         { id: 0, name: "클라스터3D", image_path: "/Images/cluster_3d.png", description: "3d 이미지입니다." }
+
+    const Cnt = 
+        { id: 0, name: "문장수 비교분석", image_path: "/Images/cnt.png", description: "cnt" }
+
+    const [selectVal,setSelectVal] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [cnt, setCnt] = useState<string>('');
+    const [text, setText] = useState<string>('');
+
+    const changeSelectValue = (event: ChangeEvent<HTMLSelectElement>) => {
+        setSelectVal(event.target.value);
+    };
+    const handleText = (e: ChangeEvent<HTMLInputElement>): void => {
+        const file = e.target.files?.[0]
+        // 파일 여러개중 처음 하나만 선택
+        if (!file) return;
+        // 파일이 없으면 종료
+    
+        const reader = new FileReader()
+        // 클래스 파일리더를 사용하겠다 reder로
+    
+        reader.readAsText(file);
+        // 위에서 생성한 파일을 읽기
+    
+        reader.onload = (event) => {
+          const fileText = event.target?.result as string;
+          // 타입 단언 
+          // fileText는 이제 string 입니다.
+    
+          setText(fileText);
+          // const prompt = text;
+          // console.log('프롬프트 :', text);
+        }
+      } 
+
+    const handleCnt = async (): Promise<void> => {
+        if (!text) {
+          console.warn('텍스트가 입력되지 않았습니다.');
+          return;
+        }
+        if (!selectVal){
+            console.warn('장르가 선택되지 않았습니다.')
+            return;
+        }
+        try {
+          if (!loading) {
+              setLoading(true);
+          }
+            const response = await getModelApi({
+                method: 'POST',
+                withCredentials: true,
+                url: `/${selectVal}`,
+                data: { passage: text },
+                headers: {
+                    accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            // setCnt(response.data)
+            // console.log('분석된 결과 : ', response.data.cnt)
+            setCnt(response.data.cnt)
+            setLoading(false);
+          } catch (error: any) {
+            console.error(error.response?.data || error.message);
+            alert(error.response?.data?.error || '모델 로드에 실패했습니다.');
+          } finally {
+            setLoading(false);
+          }
+        };
     return (
         <div className="analyze-page m-10 bg-gray-400 rounded-lg shadow-lg">
             <div className="p-4">
@@ -26,6 +97,62 @@ const Analyze = () => {
                         문피아는 단순한 소설 플랫폼을 넘어, 작가와 독자가 함께 성장하고 꿈을 이룰 수 있는 공간을 제공합니다. 독자들은 다양한 장르의 작품을 통해
                         상상력을 키우고, 작가들은 그들의 이야기가 책으로 출간되는 순간을 상상하며 창작의 즐거움을 느낄 수 있도록 돕습니다.
                     </p>
+                </section>
+
+                {/* 소설 문장수 분석 */}
+                <section className="cluster-summary mt-8 mb-6 bg-white p-6 rounded-lg shadow-sm">
+                <h2 className="text-2xl font-bold mb-4 text-blue-500">문장수 분석</h2>
+                    <p className="text-gray-700 leading-relaxed">
+                    로맨스와 로판 장르는 주로 빠르고 감정적인 전개를 선호하는 독자층의 특성상 평균 문장 수가 150문장 내외로 짧은 편입니다.
+                    </p>
+                    <p className="text-gray-700 leading-relaxed">
+                    반면, 무협, 판타지, 현판 장르는 복잡한 세계관 설정과 서사를 포함하는 경우가 많아 평균 문장 수가 200문장 이상으로 나타난 것으로 보입니다.
+                    </p>
+                    <hr className="my-4 border-t border-gray-300" />
+                    
+                    <div className="visualizations mt-6 grid grid-cols-2 gap-6">
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-800">텍스트 파일을 보내주세요</h3>
+                            <p className="text-gray-600 mt-2">문장수를 분석해드리겠습니다.</p>
+                            <label>
+                            장르 선택 :
+                                <select 
+                                name="selectedFruit"
+                                onChange={changeSelectValue}>
+                                    <option key={1} value="cnt_martial">무협</option>
+                                    <option key={2} value="cnt_fantasy">판타지</option>
+                                    <option key={3} value="cnt_romfan">로맨스 판타지</option>
+                                    <option key={4} value="cnt_romance">로맨스</option>
+                                    <option key={5} value="cnt_newfan">현대 판타지</option>
+                                </select>
+                            </label>
+                            <input
+                            type='file'
+                            className="flex-grow border p-2 m-2 rounded-md shadow-sm mt-10 text-2xl"
+                            onChange={handleText}
+                            />
+                            <button 
+                            onClick={handleCnt} 
+                            disabled={loading}
+                            className='bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600 text-2xl'>
+                            <span className="flex items-center justify-center">
+                                {loading? <FaSpinner /> : '출력'}
+                            </span>
+                            </button>
+                            <br />
+                            <br />
+                            <p className="text-gray-600 text-2xl">
+                                {cnt}
+                            </p>
+                        </div>
+                        <div className="cluster-visualization bg-white p-6 rounded-lg shadow-md h-[600px]">
+                            <img
+                                className="rounded-2xl h-full"
+                                src={Cnt.image_path}
+                                alt={Cnt.description}
+                            />
+                        </div>
+                    </div>
                 </section>
 
                 {/* 독자 선호 태그와 트렌드 분석 */}

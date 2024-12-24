@@ -102,6 +102,8 @@ const errorHandler = (err, req, res, next) => {
     res.status(err.status || 500).json({ error: err.message });
 };
 app.use(errorHandler);
+// const PORT = 8001;
+// const HOST = '192.168.104.7'; 
 if (isProduction) {
     // HTTPS 서버 설정
     const options = {
@@ -121,8 +123,12 @@ if (isProduction) {
     });
 }
 else {
-    // 로컬 개발 서버 설정
+    //   로컬 개발 서버 설정
     app.listen(8001, () => {
         console.log('Development 서버가 http://localhost:8001 에서 실행 중');
     });
 }
+// app.listen(PORT, HOST, () => {
+// console.log(`Server is running at http://${HOST}:${PORT}`);
+// });
+// }
