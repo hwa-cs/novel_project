@@ -64,7 +64,7 @@ const login: RequestHandler = async (req, res, next) => {
 
         // 포스트 데이터 비동기적으로 가져오기
         const posts = await Post.findAll({
-          attributes: ['content', 'makeContent'],
+          attributes: ['id', 'content', 'makeContent'],
           where: { userId: user.id },
           order: [['createdAt', 'DESC']],
           limit: 10,
@@ -80,6 +80,7 @@ const login: RequestHandler = async (req, res, next) => {
 
         // 포스트 데이터 처리
         const postData = posts.map(post => ({
+          id: post.id,
           content: post.content,
           makeContent: post.makeContent,
         }));

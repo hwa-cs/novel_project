@@ -56,7 +56,7 @@ const uploadPost = async(req: CustomRequest, res:Response, next: NextFunction): 
             makeContent : makeContent
         })
         const posts = await Post.findAll({
-            attributes: ['content', 'makeContent'],
+            attributes: ['id','content', 'makeContent'],
             where: { userId: req.user.id },
             order: [['createdAt', "DESC"]],
             limit: 10,
@@ -64,6 +64,7 @@ const uploadPost = async(req: CustomRequest, res:Response, next: NextFunction): 
         
         // content와 makeContent 값을 배열로 추출
         const postData = posts.map(post => ({
+            id: post.id,
             content: post.content,
             makeContent: post.makeContent
         }));
@@ -144,7 +145,7 @@ const makeCover = async (req: Request, res: Response, next: NextFunction): Promi
         })
 
         const Covers = await Cover.findAll({
-            attributes: ['makeCover'],
+            attributes: ['id','makeCover'],
             where: { userId: req.user.id },
             order: [['createdAt', "DESC"]],
             limit: 6,
@@ -167,4 +168,81 @@ const makeCover = async (req: Request, res: Response, next: NextFunction): Promi
     
 }
 
-export {  uploadPost, makeCover, }
+const update = async(req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+        res.status(401).json({ error: "Unauthorized: User not found" });
+        return;
+      }
+    const UserId = req.user.id;
+    const contentId = req.body.id
+    const Content = req.body.content;
+      
+    console.log(UserId)
+    // console.log('콘텐트id : ',contentId)
+    // console.log('콘텐트 : ', Content)
+    await Post.update({makeContent:Content},{where:{UserId:UserId, id:contentId}});
+
+    const posts = await Post.findAll({
+        attributes: ['id','content', 'makeContent'],
+        where: { userId: UserId },
+        order: [['createdAt', "DESC"]],
+        limit: 10,
+    });
+    
+    // content와 makeContent 값을 배열로 추출
+    const postData = posts.map(post => ({
+        id: post.id,
+        content: post.content,
+        makeContent: post.makeContent
+    }));
+    
+    // 결과 반환
+    res.status(200).json({
+    success: '수정 되었습니다.',
+    posts: postData,
+    });
+    return
+  }
+const deleteCover = async(req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+        res.status(401).json({ error: "Unauthorized: User not found" });
+        return;
+      }
+      
+    const id = req.user.id;
+    await Cover.destroy({where: {id:2}});
+  }
+
+const deleteShort = async(req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+        res.status(401).json({ error: "Unauthorized: User not found" });
+        return;
+      }
+    const UserId = req.user.id;
+    const contentId = req.body.id
+    // console.log('contentId: ', contentId);
+    // console.log('userId: ', UserId);
+    await Post.destroy({where: {UserId: UserId, id: contentId}})
+
+    const posts = await Post.findAll({
+        attributes: ['id','content', 'makeContent'],
+        where: { userId: UserId },
+        order: [['createdAt', "DESC"]],
+        limit: 10,
+    });
+    
+    // content와 makeContent 값을 배열로 추출
+    const postData = posts.map(post => ({
+        id: post.id,
+        content: post.content,
+        makeContent: post.makeContent
+    }));
+    
+    // 결과 반환
+    res.status(200).json({
+    success: '삭제 되었습니다.',
+    posts: postData,
+    });
+    return
+  }
+export {  uploadPost, makeCover, deleteCover, update, deleteShort}

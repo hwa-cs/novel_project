@@ -18,4 +18,7 @@ catch (error) {
 // POST /post
 router.post('/', middlewares_1.isLoggedIn, post_1.uploadPost);
 router.post('/cover', middlewares_1.isLoggedIn, post_1.makeCover);
+router.post('/update', middlewares_1.isLoggedIn, post_1.update);
+router.post('/deleteShort', middlewares_1.isLoggedIn, post_1.deleteShort);
+router.post('/deleteCover', middlewares_1.isLoggedIn, post_1.deleteCover);
 exports.default = router;

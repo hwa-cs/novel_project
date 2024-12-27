@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.makeCover = exports.uploadPost = void 0;
+exports.deleteShort = exports.update = exports.deleteCover = exports.makeCover = exports.uploadPost = void 0;
 const post_1 = __importDefault(require("../models/post"));
 const cover_1 = __importDefault(require("../models/cover"));
 const axios_1 = __importDefault(require("axios"));
@@ -60,13 +60,14 @@ const uploadPost = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             makeContent: makeContent
         });
         const posts = yield post_1.default.findAll({
-            attributes: ['content', 'makeContent'],
+            attributes: ['id', 'content', 'makeContent'],
             where: { userId: req.user.id },
             order: [['createdAt', "DESC"]],
             limit: 10,
         });
         // content와 makeContent 값을 배열로 추출
         const postData = posts.map(post => ({
+            id: post.id,
             content: post.content,
             makeContent: post.makeContent
         }));
@@ -140,7 +141,7 @@ const makeCover = (req, res, next) => __awaiter(void 0, void 0, void 0, function
             makeCover: fileName
         });
         const Covers = yield cover_1.default.findAll({
-            attributes: ['makeCover'],
+            attributes: ['id', 'makeCover'],
             where: { userId: req.user.id },
             order: [['createdAt', "DESC"]],
             limit: 6,
@@ -161,3 +162,74 @@ const makeCover = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.makeCover = makeCover;
+const update = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.user) {
+        res.status(401).json({ error: "Unauthorized: User not found" });
+        return;
+    }
+    const UserId = req.user.id;
+    const contentId = req.body.id;
+    const Content = req.body.content;
+    console.log(UserId);
+    // console.log('콘텐트id : ',contentId)
+    // console.log('콘텐트 : ', Content)
+    yield post_1.default.update({ makeContent: Content }, { where: { UserId: UserId, id: contentId } });
+    const posts = yield post_1.default.findAll({
+        attributes: ['id', 'content', 'makeContent'],
+        where: { userId: UserId },
+        order: [['createdAt', "DESC"]],
+        limit: 10,
+    });
+    // content와 makeContent 값을 배열로 추출
+    const postData = posts.map(post => ({
+        id: post.id,
+        content: post.content,
+        makeContent: post.makeContent
+    }));
+    // 결과 반환
+    res.status(200).json({
+        success: '수정 되었습니다.',
+        posts: postData,
+    });
+    return;
+});
+exports.update = update;
+const deleteCover = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.user) {
+        res.status(401).json({ error: "Unauthorized: User not found" });
+        return;
+    }
+    const id = req.user.id;
+    yield cover_1.default.destroy({ where: { id: 2 } });
+});
+exports.deleteCover = deleteCover;
+const deleteShort = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.user) {
+        res.status(401).json({ error: "Unauthorized: User not found" });
+        return;
+    }
+    const UserId = req.user.id;
+    const contentId = req.body.id;
+    // console.log('contentId: ', contentId);
+    // console.log('userId: ', UserId);
+    yield post_1.default.destroy({ where: { UserId: UserId, id: contentId } });
+    const posts = yield post_1.default.findAll({
+        attributes: ['id', 'content', 'makeContent'],
+        where: { userId: UserId },
+        order: [['createdAt', "DESC"]],
+        limit: 10,
+    });
+    // content와 makeContent 값을 배열로 추출
+    const postData = posts.map(post => ({
+        id: post.id,
+        content: post.content,
+        makeContent: post.makeContent
+    }));
+    // 결과 반환
+    res.status(200).json({
+        success: '삭제 되었습니다.',
+        posts: postData,
+    });
+    return;
+});
+exports.deleteShort = deleteShort;

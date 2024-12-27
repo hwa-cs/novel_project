@@ -66,7 +66,14 @@ const Header: React.FC = () => {
         </button>
         <div className="hidden md:flex">
           {LoginCheck ? (
-            <button onClick={onLogout}>로그아웃</button> // 수정된 부분
+            <div className='flex gap-6'>
+              <div>
+              <Link to='/UserPage'>내 페이지</Link>
+              </div>
+              <div>
+              <button onClick={onLogout}>로그아웃</button>
+              </div>
+            </div>
           ) : (
             <Link to="/login">로그인</Link>
           )}

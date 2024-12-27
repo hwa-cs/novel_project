@@ -25,13 +25,13 @@ const userData = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
             const id = req.user.id;
             // 포스트 데이터 비동기적으로 가져오기
             const posts = yield post_1.default.findAll({
-                attributes: ['content', 'makeContent'],
+                attributes: ['id', 'content', 'makeContent'],
                 where: { userId: id },
                 order: [['createdAt', 'DESC']],
                 limit: 10,
             });
             const Covers = yield cover_1.default.findAll({
-                attributes: ['makeCover'],
+                attributes: ['id', 'makeCover'],
                 where: { userId: id },
                 order: [['createdAt', "DESC"]],
                 limit: 6,
@@ -39,6 +39,7 @@ const userData = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
             });
             // 포스트 데이터 처리
             const postData = posts.map(post => ({
+                id: post.id,
                 content: post.content,
                 makeContent: post.makeContent,
             }));

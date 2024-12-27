@@ -1,7 +1,6 @@
 import express from 'express';
 import fs from 'fs';
-
-import { uploadPost, makeCover } from '../controllers/post';
+import { uploadPost, makeCover, update, deleteShort, deleteCover } from '../controllers/post';
 import {isLoggedIn} from '../middlewares';
 
 const router = express.Router();
@@ -18,5 +17,10 @@ router.post('/', isLoggedIn, uploadPost);
 
 router.post('/cover', isLoggedIn, makeCover)
 
+router.post('/update', isLoggedIn, update)
+
+router.post('/deleteShort', isLoggedIn, deleteShort)
+
+router.post('/deleteCover', isLoggedIn, deleteCover)
 
 export default router;

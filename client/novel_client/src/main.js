@@ -20,6 +20,8 @@ import Romance from './pages/Genre/Romance';
 import RomanceFantasy from './pages/Genre/RomanceFantasy';
 import CurrentFantasy from './pages/Genre/CurrentFantasy';
 import Martial from './pages/Genre/Martial';
+import UserPage from './pages/UserPage';
+import PostDetail from './pages/UserDetail';
 import './index.css';
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
@@ -88,6 +90,15 @@ const router = createBrowserRouter([
             {
                 path: 'Callback',
                 element: _jsx(Callback, {}),
+            },
+            {
+                path: 'UserPage',
+                element: _jsx(UserPage, {}),
+            },
+            // 추가된 라우트
+            {
+                path: 'post-detail/:id',
+                element: _jsx(PostDetail, {}),
             },
         ],
         errorElement: _jsx(ErrorPage, {}),

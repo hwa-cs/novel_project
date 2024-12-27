@@ -17,14 +17,14 @@ const userData = async (req: Request, res: Response, next: NextFunction) => {
         const id = req.user.id
         // 포스트 데이터 비동기적으로 가져오기
         const posts = await Post.findAll({
-        attributes: ['content', 'makeContent'],
+        attributes: ['id','content', 'makeContent'],
         where: { userId: id },
         order: [['createdAt', 'DESC']],
         limit: 10,
         });
 
         const Covers = await Cover.findAll({
-            attributes: ['makeCover'],
+            attributes: ['id','makeCover'],
             where: { userId: id },
             order: [['createdAt', "DESC"]],
             limit: 6,
@@ -33,6 +33,7 @@ const userData = async (req: Request, res: Response, next: NextFunction) => {
 
         // 포스트 데이터 처리
         const postData = posts.map(post => ({
+            id: post.id,
         content: post.content,
         makeContent: post.makeContent,
         }));

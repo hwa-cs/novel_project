@@ -19,6 +19,8 @@ import Romance from './pages/Genre/Romance';
 import RomanceFantasy from './pages/Genre/RomanceFantasy';
 import CurrentFantasy from './pages/Genre/CurrentFantasy';
 import Martial from './pages/Genre/Martial';
+import UserPage from './pages/UserPage';
+import PostDetail from './pages/UserDetail';
 import './index.css';
 
 const queryClient = new QueryClient();
@@ -90,10 +92,20 @@ const router = createBrowserRouter([
                 path: 'Callback',
                 element: <Callback />,
             },
+            {
+                path: 'UserPage',
+                element: <UserPage />,
+            },
+            // 추가된 라우트
+            {
+                path: 'post-detail/:id',
+                element: <PostDetail />,
+            },
         ],
         errorElement: <ErrorPage />,
     },
 ]);
+
 
 // createRoot에 전달되는 DOM 요소가 null일 경우 대비
 const rootElement = document.getElementById('root');
