@@ -23,7 +23,7 @@
 - 화철수 - Frontend, Backend, 배포
 
 ## ✔️ 아키텍처 구성도
-![architecture](docs/img/architecture.png)
+![architecture](docs/img/architecture.jpg)
 
 ## ✔️ 주요 기능
 ### 1) 내가 원하는 상황을 바탕으로 소설 작성
